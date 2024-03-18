@@ -1,4 +1,4 @@
-#ISSUE - Add error handling for failed server connection
+# ISSUE - Add error handling for failed server connection
 
 import socket 
 import select 
@@ -8,8 +8,8 @@ import selectors
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
 # if len(sys.argv) != 3: 
 #     print ("Correct usage: script, IP address, port number")
-#     exit() 
-IP_address = str("172.16.2.147") 
+#     exit() 172.16.3.40
+IP_address = str("172.16.9.173") 
 port = int(8888) 
 server.connect((IP_address, port))
 
@@ -25,36 +25,47 @@ events = selectors.EVENT_READ | selectors.EVENT_WRITE
 #Register the socket to the selector which will allow the events being monitored to be monitored on the specific socket.
 selector_object.register(server, events)
 
+
+
+send_message = True #Flag to control flow of execution between reading and writing. Without it, switch between reading from server and allowing writing to server is unpredictable
+first_message = True #Used to send dummmy message that prompts server to provide sign up and login options
+dummy_message = "dUmmY mEsSaGe"
+
+#Following code allows writing and reading to and from the server in alternating order under a close command is entered to close server
 while True:
-    server.send("Initial message")
     events = selector_object.select()
     for key, mask in events:
-        if mask & selectors.EVENT_READ: #The socket is ready to have data read from it
-            print("Read event occurring")
-            data = key.fileobj.recv(2048) #Get data from the socket(the server)
-            
-            if not data: #Data received from server is empty, check if the socket to the client is closed
+        if mask & selectors.EVENT_READ:
+            print("Receiving data")
+            data = key.fileobj.recv(2048)
+            if not data:                               # Socket is closed
                 print("Socket is closed")
-                key.fileobj.close()
                 selector_object.unregister(key.fileobj)
                 key.fileobj.close()
                 sys.exit(0)
-            else:
-                print("Data received successfully. It is \n<Server> : ", data)
-            
-        elif mask and selectors.EVENT_WRITE:
-            #Socket is ready to be written to 
-            message = sys.stdin.readline()
-            if(message.strip() == "close"):
-                print("<Client> Closing connection")
-                key.fileobj.close()
-            elif(message.strip() == ""):
-                print("Error no content")
+            print("Server data -> ", data)
+            send_message = True
 
-            else:
-                key.fileobj.send(message.encode('utf-8'))
-                
+        if mask & selectors.EVENT_WRITE and send_message:
+            if(first_message):
+                key.fileobj.send(dummy_message.encode())
+                first_message = False
+                continue
+
+            print("Enter your message>>", end=" ", flush=True)
+            message = sys.stdin.readline()
+
+            if(message.strip() == "cLoSe123"):
+                print("Closing connection and exiting")
+                key.fileobj.close()
+                sys.exit(0)
+
+            elif(message.strip() == ""):
+                print("Error!! Empty message content")
+                continue;
             
+            key.fileobj.send(message.encode())
+            send_message = False
             
 
 

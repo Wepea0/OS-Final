@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include "Chat_app.h"
 
 #define PORT 8888
 
@@ -30,25 +31,48 @@ pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 void * handle_client(void* client_socket){
     char client_message[1000];
+    char empty_array[1000];
+
     printf("Client connected\n");
     int client_fd = *((int*)client_socket);
-    char server_reply[] = "Connection active!\n Connection will be closed now" ;
+    // char server_reply[] = "Connecton actve!" ;
     char server_message[] = "Client message processed -> " ;
 
-    write(client_fd, &server_reply, sizeof(server_reply));
+    while(1){
+        read(client_fd, &client_message, sizeof(client_message)); //Read dummy message (check if it is dummy and don't send mirror reply)
+        //Send login or signup option 
+        //Route to appropriate function based on response 
+        //In signup function 
+            //Access user details file
+            //Determine whether username has already been used. If yes, return message with error and close connection (prelim), re-serve initial options(final)
+            //If not, add username, IP address and password to list. (Decide on format, should be optimized for later seraches (username used already & find details for login))
+            //Return success message, send to select chat screen
+        //In login function
+            //Access user details file
+            //Determine whether username, password combo exists in file
+            //If it does, return success message and send to select chat screen
+            //If it does not, return error messsage and return message with error and close connection (prelim), re-serve initial options(final)
+        //Select chat screen
+            //Serve list of all users. If user selects someone with whom prior chat exists, print prior messages else create new file and print file content (empty)
+            //List of chats should be stored somewhere. 
+            
+
+        char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
+        strcpy(final_server_reply, server_message);
+        strcat(final_server_reply, client_message);
+        write(client_fd, final_server_reply, strlen(final_server_reply));
+        puts(final_server_reply);
+        
+        strcpy(client_message, empty_array);
+
+    }
+    
 
 
-    read(client_fd, &client_message, sizeof(client_message));
-
-    char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) * sizeof(char));
-    strcpy(final_server_reply, server_message);
-    strcpy(final_server_reply + 28, client_message);
-    puts(final_server_reply);
-
-    write(client_fd, &final_server_reply, sizeof(final_server_reply));
 
 
     close(client_fd);
+
 
     pthread_exit(NULL);
     
@@ -71,7 +95,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("172.16.2.147");
+	server.sin_addr.s_addr = inet_addr("172.16.9.173");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket
