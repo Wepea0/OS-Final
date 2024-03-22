@@ -1,0 +1,8 @@
+gUsername: Speedy_Kai
+password: siuuuu
+IP: 192.34.42.56
+
+Username: Ninja
+password: victory_royale
+IP: 173.43.22.19
+
