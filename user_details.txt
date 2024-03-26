@@ -1,8 +1,29 @@
-gUsername: Speedy_Kai
-password: siuuuu
-IP: 192.34.42.56
+Username: Fast
+Password: api
+IP Address: 172.16.0.70
 
-Username: Ninja
-password: victory_royale
-IP: 173.43.22.19
+Username: Thorgan
+Password: Michigan
+IP Address: 172.16.0.70
+
+Username: Donald
+Password: Duck
+IP Address: 172.16.0.70
+   
+
+Username: Ragnar
+Password: Lothbrok
+IP Address: 172.16.0.709
+
+Username: Varys
+Password: Lannister
+IP Address: 172.16.8.209
+
+Username: Bob
+Password: B
+IP Address: 172.16.8.209
+
+Username: o
+Password: o
+IP Address: 172.16.8.209
 
