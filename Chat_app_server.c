@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <dirent.h>
+#include "Test_File_Operations.h"
 #include "Chat_app.h"
 
 #define PORT 8888
@@ -35,6 +37,7 @@ void * handle_client(void* client_socket){
     char client_username[1000];
     char client_password[1000];
     char client_IP[1000];
+    char *usernames_list[1000];
     //TODO #1 - Handle when incoming data is more than capacity in buffer
 
     printf("Client connected\n");
@@ -121,6 +124,7 @@ void * handle_client(void* client_socket){
 
 
     while(1){
+        // Empty packet is received from client, connection is closed
         if (recv(client_fd, &client_message, sizeof(client_message), 0) <= 0) {
             puts("No data received. Closing connection");
             close(client_fd);
@@ -136,6 +140,17 @@ void * handle_client(void* client_socket){
             pthread_exit(NULL);
 
         }
+
+        //Serve client the select chat option after it is selected
+        if(strcmp(client_message, "selectChatMenu") == 0){
+            puts("Serving select chat menu");
+            serve_chat_menu("user_details.txt", "chats");
+            //Print all usernames in file
+            //Either creates a new file or responds with the contents of the file with chat history of client
+            // and selected user  
+        }
+
+
         //Receive login or signup option 
         //Route to appropriate function based on response 
         //In signup function 
@@ -157,15 +172,17 @@ void * handle_client(void* client_socket){
             //Serve list of all users. If user selects someone with whom prior chat exists, print prior messages else create new file and print file content (empty)
             //List of chats should be stored somewhere. 
             
+        else{
+            char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
+            strcpy(final_server_reply, server_message);
+            strcat(final_server_reply, client_message);
 
-        char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
-        strcpy(final_server_reply, server_message);
-        strcat(final_server_reply, client_message);
-
-        send(client_fd, final_server_reply, strlen(final_server_reply), 0);
-        puts(final_server_reply);
+            send(client_fd, final_server_reply, strlen(final_server_reply), 0);
+            puts(final_server_reply);
+            
+            strcpy(client_message, empty_array);
+        }
         
-        strcpy(client_message, empty_array);
 
     }
     close(client_fd);
@@ -304,8 +321,10 @@ int login_user(char *username, char *password, char *IP_address){
                     fputs(newline_sign, fileptr);
 
                     puts("Edited IP");
+                    
 
                 }
+
                 fclose(fileptr);
                 return 1;
             }
@@ -316,6 +335,22 @@ int login_user(char *username, char *password, char *IP_address){
     return -1;
 
 }
+
+
+int serve_chat_menu(char *user_details_file, char *chat_folder){
+    puts("Inside chat service function");
+    char *username_header = "Username: ";
+    //Split each item in the user detail file by :
+    //Check if first split is "Username". If yes, access second split and store 
+    //Otherwise move to next entry.
+
+    //Will need a list as well, otherwise will not be able to enforce user selected actually exists.
+
+
+    return 1;
+}
+
+
 int main() {
     int server_fd, client_fd;
    	struct sockaddr_in server , client;
@@ -331,7 +366,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("172.16.0.70");
+	server.sin_addr.s_addr = inet_addr("172.16.9.34");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket

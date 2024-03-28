@@ -139,6 +139,7 @@ STATE_SEND_LOGIN_DETAILS = 1
 STATE_WAIT_FOR_RESPONSE = 2
 STATE_SEND_MESSAGE = 3
 STATE_READ_MESSAGE = 4
+STATE_SELECT_CHAT = 5
 
 # Initialize the client state
 client_state = STATE_SEND_LOGIN_DETAILS
@@ -162,6 +163,7 @@ def serve_authentication_options():
     return user_option
 
 def send_login_signup_details(user_option):
+    """Serve login and sign up options to the user"""
 
     if user_option == "1":
         print("\nEntering sign up menu...")
@@ -214,7 +216,8 @@ while True:
 
             if(server_response == 1):
                 print("Success")
-                client_state = STATE_SEND_MESSAGE
+
+                client_state = STATE_SELECT_CHAT
             else:
                 print("Error! Closing connection")
                 # TODO #10 Test code - Ideally should return to login/sign up menu. Need support from server-side to implement
@@ -222,7 +225,7 @@ while True:
                 sys.exit(-1)
 
         # if mask & selectors.EVENT_READ:
-        if client_state == STATE_WAIT_FOR_RESPONSE:
+        elif client_state == STATE_WAIT_FOR_RESPONSE:
             response = server.recv(2048).decode()
             print(f"Server response: {response}")
             client_state = STATE_SEND_MESSAGE  
@@ -242,6 +245,11 @@ while True:
             # print(f"Server message: {message}")
             client_state = STATE_WAIT_FOR_RESPONSE
 
+        elif client_state == STATE_SELECT_CHAT: 
+            
+            pass
+
+        
 
 
 

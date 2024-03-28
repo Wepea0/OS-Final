@@ -1,0 +1,3 @@
+Fastapi: Hello mate
+ThorganMichigan: What's going on my bro?
+Fastapi: Things are calm bro, I'm coping. 
