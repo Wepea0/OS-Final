@@ -8,6 +8,55 @@ char *chat_list[100];
 char *chat_file;
 char *chat_contents[1000];
 char chat_ID[1000];
+char *user_list[100];
+
+
+
+int get_user_list(char **user_list){
+    char *username_prefix = "Username"; 
+    char curr_detail_line[1000];
+
+    char *prefix;
+    char *suffix;
+
+
+    //Open user_details file
+    FILE *fileptr;
+    fileptr = fopen("user_details.txt", "r+");
+
+    int number_users = 0;
+    while(fgets(curr_detail_line, 1000, fileptr)){
+
+        //Remove newline character that is read from the end of line in file.
+        // curr_detail_line[strlen(curr_detail_line) - 1]  = '\0';     
+       
+        //Split line in the user detail file to header (eg. Username, Password) = prefix and actual data = suffix
+        prefix = strtok(curr_detail_line, ": ");
+        suffix = strtok(NULL, ": ");
+
+        
+        //If this line contains a username (denoted by having a username prefix)
+        if(prefix != NULL){
+            if(strcmp(username_prefix, prefix) == 0){
+                // puts("Username match");
+                // printf("prefix - %s\n", prefix);
+                // printf("suffix - %s\n", suffix);
+
+                //Put username in list of usernames
+                user_list[number_users] = (char *)malloc(strlen(suffix) + 1);
+                strcpy(user_list[number_users], suffix);
+                number_users++;
+
+                }
+        }
+        
+        
+    }
+
+    fclose(fileptr);
+    return 1;
+
+}
 
 
 int get_chat_files(char * folder, char **chat_list) {
@@ -57,10 +106,10 @@ int is_chat_open(char *client, char *requested_user, char **chat_list, char *cha
         strcpy(chat_ID, chat_list[i]);
         puts(chat_ID);
 
-
         // Split file name into user names
         chat_user_1 = strtok(chat_list[i], "_");
         chat_user_2 = strtok(NULL, "_");
+        chat_user_2 = strtok(chat_user_2, ".");
 
 
         printf("User %s <---> User %s\n", chat_user_1, chat_user_2);
@@ -85,7 +134,6 @@ int is_chat_open(char *client, char *requested_user, char **chat_list, char *cha
 int retrieve_chat(char *chat_filename, char **chat_contents){
     FILE *fileptr;
     char *chat_directory = "chats/";
-    char *chat_suffix = ".txt";
     //2 accounts for string terminator character in each string since strlen doesnt't account for it
     char *chat_filepath = (char *)malloc(strlen(chat_directory) + 
                                         strlen(chat_filename) + 
@@ -106,10 +154,24 @@ int retrieve_chat(char *chat_filename, char **chat_contents){
     if(fileptr == NULL){
         return -1;
     }
+    
+    //Empty chat contents array since it is global variable and will have been used before
+    for (int i = 0; i < 1000; i++){
+        free(chat_contents[i]);
+    }
+
+
+    int i = 0;
     while(fgets(chat_line, 1000, fileptr) != NULL){
-        puts(chat_line);
+        // puts(chat_line);
+        chat_contents[i] = (char *)malloc(strlen(chat_line) + 1);
+        strcpy(chat_contents[i], chat_line);
+        // printf("%s", chat_contents[i]);
+
+        i++;
         strcpy(chat_line, empty_array);
     }
+    
 
     fclose(fileptr);
 
@@ -117,27 +179,44 @@ int retrieve_chat(char *chat_filename, char **chat_contents){
 }
 
 
-int main(){
-    // char *chat_list[100];
-    // char *chat_file;
+// int main(){
+//     // char *chat_list[100];
+//     // char *chat_file;
 
-    get_chat_files("chats", chat_list);
-    int i = 0;
-    //Iterate until special delimeter character
-    while(strcmp(chat_list[i], "\0") != 0){
-            printf("%d - %s\n", i, chat_list[i]); 
-            i++;         
-        }
+//     // get_chat_files("chats", chat_list);
+//     // int i = 0;
+//     // //Iterate until special delimeter character
+//     // while(strcmp(chat_list[i], "\0") != 0){
+//     //         printf("%d - %s\n", i, chat_list[i]); 
+//     //         i++;         
+//     //     }
 
-    is_chat_open("Fastapi", "ThorganMichigan.txt", chat_list, chat_ID);
+//     // is_chat_open("Fastapi", "ThorganMichigan.txt", chat_list, chat_ID);
 
-    if(chat_ID != NULL){
-        retrieve_chat(chat_ID, chat_contents);
+//     // if(chat_ID != NULL){
+//     //     retrieve_chat(chat_ID, chat_contents);
 
-    }
-    else{
-        puts("Conversation does not exist");
-    }
+//     // }
+//     // else{
+//     //     puts("Conversation does not exist");
+//     // }
 
-    return 1;
-}
+//     // int index = 0;
+//     // puts("Printing chat contents II");
+//     // while (chat_contents[index] != NULL){
+//     //     puts(chat_contents[index]);
+//     //     index++;
+//     // }
+
+//     get_user_list(user_list);
+//     puts("Printing user list");
+//     int i = 0;
+//     while(user_list[i] != NULL){
+//         printf("%s\n", user_list[i]);
+//         i++;
+//     }
+
+
+
+//     return 1;
+// }

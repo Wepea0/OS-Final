@@ -1,6 +1,9 @@
 #ifndef FILE_OPERATIONS_H
 #define FILE_OPERATIONS_H
 
+//Contain list of all existing users
+extern char *user_list[100];
+
 //Contain list of all chat files (denoting active conversations)
 extern char *chat_list[100];
 
@@ -10,8 +13,11 @@ extern char *chat_file;
 //Contain the contents of a user chat
 extern char *chat_contents[1000];
 
-//Contain filename of selected file
+//Contain filename of selected user conversation
 extern char chat_ID[1000];
+
+//Return array with names of all users
+int get_user_list(char **user_list);
 
 //Return array with names of all active chats
 int get_chat_files(char * folder, char **chat_list);

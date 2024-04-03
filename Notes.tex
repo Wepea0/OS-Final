@@ -15,3 +15,19 @@ Usernames_list should be dynamically allocated during the traversal of the user_
 TODO: Use strtok to split string instead of shifting pointer when comparing for login
 
 Free all malloced arrays
+
+Chat selection 
+- User selects username 
+- Access user id for that username
+
+TODO - Add timeout to login and signup on client side to restart process for the occassional situation when password and IP get sent together
+
+Send integer representing desired chat, run chat search with current username and desired usernamed
+Will need to match user names to IDs 
+
+ISSUE - Unpredictability With login info (password and IP being sent together)
+TODO - Send username, password and IP address together and use delimiter
+
+ FIXED - With user list reception on client side, delimiting character showing end of list is not recognized as end of list leading to a stall
+
+TODO: Create new file for chat that doesn't exist

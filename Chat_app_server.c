@@ -5,8 +5,10 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <dirent.h>
-#include "Test_File_Operations.h"
+#include "File_Operations.h"
 #include "Chat_app.h"
+#include <fcntl.h>
+
 
 #define PORT 8888
 
@@ -37,31 +39,27 @@ void * handle_client(void* client_socket){
     char client_username[1000];
     char client_password[1000];
     char client_IP[1000];
-    char *usernames_list[1000];
     //TODO #1 - Handle when incoming data is more than capacity in buffer
 
     printf("Client connected\n");
     int client_fd = *((int*)client_socket);
-    // char server_reply[] = "Connecton actve!" ;
+
+    //Server response messages
     char server_message[] = "Client message processed -> " ;
-    // char sign_up_success_reply[] = "Congratulations Sign up complete " ;
-    // char sign_up_fail_reply[] = "Error!!! Sign up incomplete" ;
 
     char sign_up_success_reply[] = "1" ;
     char sign_up_fail_reply[] = "-1" ;
 
-    //Login messages
-    // char login_success_reply[] = "Login successful";
-    // char login_fail_reply[] = "Login fail";
     char login_success_reply[] = "1";
     char login_fail_reply[] = "-1";
 
     char close_connection_message[] = "Closing server connection";
 
-
-
+    //Receive client  selection
     recv(client_fd, &client_message, sizeof(client_message), 0); 
-    if(client_message[0] == '1'){ //Sign up option
+
+    //Sign up option
+    if(client_message[0] == '1'){ 
         puts("Server signup");
         
         recv(client_fd, &client_username, sizeof(client_username), 0); //Get username
@@ -76,23 +74,19 @@ void * handle_client(void* client_socket){
         if(store_user_details(client_username, client_password, client_IP) == 1){
             send(client_fd, &sign_up_success_reply, strlen(sign_up_success_reply), 0);
             puts("Sign up complete");
-
         }
+
         else{
             send(client_fd, &sign_up_fail_reply, strlen(sign_up_fail_reply), 0);
             puts("Sign up failed");
-            //Test code
             close(client_fd);
             pthread_exit(NULL);
             return NULL;
-            //ISSUE #9 - Write function for login/signup
-
-
         }
-
-
     }
-    else{ //Login option 
+
+    //Login option
+    else{  
         puts("Server login");
         recv(client_fd, &client_username, sizeof(client_username), 0); //Get username
         recv(client_fd, &client_password, sizeof(client_password), 0); //Get user password
@@ -101,10 +95,8 @@ void * handle_client(void* client_socket){
         if(login_user(client_username, client_password, client_IP) == 1){
             send(client_fd, &login_success_reply, strlen(login_success_reply), 0);
             puts("Login successful");
-
-
-
         }
+
         else{
             send(client_fd, &login_fail_reply, strlen(login_fail_reply), 0);
             puts("Login failed");
@@ -112,25 +104,17 @@ void * handle_client(void* client_socket){
             close(client_fd);
             pthread_exit(NULL);
             return NULL;
-
-            //ISSUE #9 - Write function for login/signup
-
-
         }
     }
 
+    //Empty client message array to be reused later
     strcpy(client_message, empty_array);
 
 
-
-    while(1){
+    int value = recv(client_fd, &client_message, sizeof(client_message), 0);
+    while(value > 0){
+        puts("While start");
         // Empty packet is received from client, connection is closed
-        if (recv(client_fd, &client_message, sizeof(client_message), 0) <= 0) {
-            puts("No data received. Closing connection");
-            close(client_fd);
-            pthread_exit(NULL);
-
-        }
 
         //Close client connection based on close message from user
         if(strcmp(client_message, "cLoSe123") == 0){
@@ -138,16 +122,29 @@ void * handle_client(void* client_socket){
             puts("Closing connection");
             close(client_fd);
             pthread_exit(NULL);
-
         }
 
         //Serve client the select chat option after it is selected
         if(strcmp(client_message, "selectChatMenu") == 0){
             puts("Serving select chat menu");
-            serve_chat_menu("user_details.txt", "chats");
-            //Print all usernames in file
-            //Either creates a new file or responds with the contents of the file with chat history of client
-            // and selected user  
+            printf("Client message - %s\n", client_message);
+            serve_chat_menu(client_fd, client_username);
+        }
+
+        //Get user chat selection
+        if(strcmp(client_message, "retrieveChatMenu") == 0){
+            puts("Serving retrieve chat menu");
+            char requested_user_index[5];
+            char requested_username[100];
+            char requested_user_id[200];
+
+            recv(client_fd, &requested_username, sizeof(requested_username), 0);
+            
+            printf("Client message - %s \nSubmitted user selection - %s --\n", client_message, requested_username);
+
+            open_chat(client_fd, requested_username, client_username);
+            // open_chat(client_fd, client_username, requested_username);
+
         }
 
 
@@ -171,22 +168,27 @@ void * handle_client(void* client_socket){
         //Select chat screen
             //Serve list of all users. If user selects someone with whom prior chat exists, print prior messages else create new file and print file content (empty)
             //List of chats should be stored somewhere. 
-            
-        else{
-            char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
-            strcpy(final_server_reply, server_message);
-            strcat(final_server_reply, client_message);
+        
 
-            send(client_fd, final_server_reply, strlen(final_server_reply), 0);
-            puts(final_server_reply);
-            
-            strcpy(client_message, empty_array);
+        //Might have to do away with this else
+        else{
+            puts("In else");
+            // char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
+            // strcpy(final_server_reply, server_message);
+            // strcat(final_server_reply, client_message);
+            // send(client_fd, final_server_reply, strlen(final_server_reply), 0);
+            // puts(final_server_reply);
+            // strcpy(client_message, empty_array);
         }
+        puts("End start");
+        value = recv(client_fd, &client_message, sizeof(client_message), 0);
         
 
     }
+    puts("No data received. Closing connection");
     close(client_fd);
     pthread_exit(NULL);
+   
 }
 
 
@@ -196,7 +198,9 @@ int store_user_details(char *username, char *password, char *IP){
         char *username_header = "Username: ";
         char *password_header = "Password: ";
         char *IP_header = "IP Address: ";
+        char *user_id_header = "User ID: ";
         char *newline_sign = "\n";
+
         fileptr = fopen("user_details.txt", "a");
         if(fileptr == NULL){
             return 0;
@@ -208,17 +212,20 @@ int store_user_details(char *username, char *password, char *IP){
         char *username_array = (char *)malloc(strlen(username) + 2 + strlen(username_header));
         char *password_array = (char *)malloc(strlen(password) + 2 + strlen(password_header));
         char *IP_array = (char *)malloc(strlen(IP) + 2 + strlen(IP_header));
+        char *user_id_array = (char *)malloc(strlen(username) + strlen(password) + strlen(user_id_header) + 3); //Autogenerated user ID is combination of first username and password
 
         strcpy(username_array, username_header);
         strcpy(password_array, password_header);
         strcpy(IP_array, IP_header);
+        strcpy(user_id_array, user_id_header);
 
         //Concatenate format string and actual username, password and IP 
         strcat(username_array, username);
         strcat(password_array, password);
         strcat(IP_array, IP);
 
-
+        strcat(user_id_array, username);
+        strcat(user_id_array, password);
 
         
         fputs(username_array,fileptr);
@@ -231,9 +238,14 @@ int store_user_details(char *username, char *password, char *IP){
 
         fputs(IP_array, fileptr);
         fputs(newline_sign, fileptr);
-        fputs(newline_sign, fileptr);
 
         puts("written IP");
+
+        fputs(user_id_array, fileptr);
+        fputs(newline_sign, fileptr);
+        fputs(newline_sign, fileptr);
+        puts("generated and written user id");
+
 
 
 
@@ -337,17 +349,77 @@ int login_user(char *username, char *password, char *IP_address){
 }
 
 
-int serve_chat_menu(char *user_details_file, char *chat_folder){
-    puts("Inside chat service function");
-    char *username_header = "Username: ";
-    //Split each item in the user detail file by :
-    //Check if first split is "Username". If yes, access second split and store 
-    //Otherwise move to next entry.
+int serve_chat_menu(int client_fd, char *curr_username){
+    get_user_list(user_list);
+    char end_list_string[] = "/00/";
+    char list_delimiter[] = "ld00"; //Sent in between each name to enable easy processing on client
 
-    //Will need a list as well, otherwise will not be able to enforce user selected actually exists.
+    char empty_array[100];
+    char requested_user_index[5];
+    char requested_username[100];
+    char requested_user_id[200];
+
+
+    int i = 0;
+    char hold_username[100];
+
+    while(user_list[i] != NULL){
+        printf("%s\n", user_list[i]);
+        strcpy(hold_username, user_list[i]);
+        send(client_fd, &hold_username, strlen(hold_username), 0);
+        send(client_fd, &list_delimiter, strlen(list_delimiter), 0);
+        strcpy(hold_username, empty_array);
+
+        i++;
+    
+
+    }
+
+    send(client_fd, &end_list_string, strlen(end_list_string), 0);
+    
 
 
     return 1;
+
+
+
+}
+
+int open_chat(int client_fd, char *curr_username, char *requested_username){
+    char list_delimiter[] = "ld00"; //Sent in between each chat sentence to enable easy processing on client
+    char end_list_string[] = "/00/"; //Sent to show end of server response
+    char hold_chat_line[1000]; //Chat line is read from array and sent from this variable to ensure predictable send behaviour (since char arrays deal with pointers)
+    char empty_array[1000]; //Used to empty hold_chat_line array to reuse it
+
+    get_chat_files("chats", chat_list);
+    int value;
+    value = is_chat_open(curr_username, requested_username, chat_list, chat_ID);
+
+    if(value == 1){
+        puts("Retrieving chat");
+        puts(chat_ID);
+
+        retrieve_chat(chat_ID, chat_contents);
+        int index = 0;
+        puts("Printing chat contents");
+            while (chat_contents[index] != NULL){
+                puts(chat_contents[index]);
+                strcpy(hold_chat_line, chat_contents[index]);
+                send(client_fd, &hold_chat_line, strlen(hold_chat_line), 0);
+                send(client_fd, &list_delimiter, strlen(list_delimiter), 0);
+                index++;
+                strcpy(hold_chat_line, empty_array);
+
+            }
+            send(client_fd, &end_list_string, strlen(end_list_string), 0);
+
+        return 1;
+
+    }
+    else{
+        puts("Conversation does not exist");
+    }
+    return -1;
 }
 
 
@@ -366,7 +438,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("172.16.9.34");
+	server.sin_addr.s_addr = inet_addr("172.16.7.62");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket

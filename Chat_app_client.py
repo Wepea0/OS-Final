@@ -1,134 +1,3 @@
-# # ISSUE - Add error handling for failed server connection
-
-# import socket 
-# import sys 
-# import selectors
-
-# server = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-# # if len(sys.argv) != 3: 
-# #     print ("Correct usage: script, IP address, port number")
-# #     exit() 172.16.3.40
-# IP_address = str("172.16.8.95") 
-# port = int(8888) 
-# server.connect((IP_address, port))
-
-# #Create selector object to monitor multiple sockets simultaneously for reading or writing 
-# selector_object = selectors.DefaultSelector()
-
-# #Sets server to return error/special value if an operation cannot be completed immediately instead of waiting 
-# server.setblocking(False)
-
-# #Specify the types of events that will be monitored
-# events = selectors.EVENT_READ | selectors.EVENT_WRITE
-
-# #Register the socket to the selector which will allow the events being monitored to be monitored on the specific socket.
-# selector_object.register(server, events)
-
-
-# #Helper functions
-# def serve_authentication_options(server_key):
-#     """Serve user option to login or sign up to chat server """
-
-#     print("Welcome to SWE chat.\nEnter 1 to signup or 2 to login >> ", end="", flush=True)
-#     user_input = input()
-#     if(user_input == "1"):
-#         print("\nEntering sign up menu...")
-#         server_key.fileobj.send(user_input.encode())
-#     elif(user_input == "2"):
-#         print("\nEntering login menu...")
-#         server_key.fileobj.send(user_input.encode())
-#     else:
-#         serve_authentication_options(server_key)
-#     return user_input
-
-
-# def serve_signup(server_key):
-#     """Function to take user info for sign up"""
-#     user_ip = get_ip()
-
-#     print("\nWelcome to Sign Up.\nEnter your preferred username >> ", end="", flush=True)
-#     username = input()
-#     print("\nEnter your preferred password >> ", end="", flush=True)
-#     user_password = input()
-#     server_key.fileobj.send(username.encode())
-#     server_key.fileobj.send(user_password.encode())
-#     server_key.fileobj.send(user_ip.encode())
-
-
-# def serve_login(server_key):
-#     """Function to take user info for login"""
-    
-#     user_ip = get_ip()
-
-#     print("\nWelcome to Log In.\nEnter your username >> ", end="", flush=True)
-#     username = input()
-#     print("\nEnter your password >> ", end="", flush=True)
-#     user_password = input()
-#     server_key.fileobj.send(username.encode())
-#     server_key.fileobj.send(user_password.encode())
-#     server_key.fileobj.send(user_ip.encode())
-
-
-# def get_ip():
-#     """Access client ip """
-#     return server.getsockname()[0]
-
-
-
-    
-
-# send_message = True #Flag to control flow of execution between reading and writing. Without it, switch between reading from server and allowing writing to server is unpredictable
-# first_message = True #Used to send dummmy message that prompts server to provide sign up and login options
-# dummy_message = "dUmmY mEsSaGe"
-
-# #Following code allows writing and reading to and from the server in alternating order under a close command is entered to close server
-# while True:
-#     events = selector_object.select()
-#     for key, mask in events:
-#         if mask & selectors.EVENT_READ:
-#             print("Receiving data")
-#             data = key.fileobj.recv(2048)
-#             if not data:                               # Socket is closed
-#                 print("Socket is closed")
-#                 selector_object.unregister(key.fileobj)
-#                 key.fileobj.close()
-#                 sys.exit(0)
-#             print("Server data -> ", data)
-#             send_message = True
-
-#         if mask & selectors.EVENT_WRITE and send_message:
-#             if(first_message):
-#                 first_message = False
-#                 user_input = serve_authentication_options(key)
-#                 if(user_input == "1"):
-#                     serve_signup(key)
-#                 else:
-#                     serve_login(key)
-#                 # key.fileobj.send(dummy_message.encode())
-#                 # first_message = False
-#                 # continue
-
-#             print("Enter your message>>", end=" ", flush=True)
-#             message = sys.stdin.readline()
-
-#             if(message.strip() == "cLoSe123"):
-#                 print("Closing connection and exiting")
-#                 key.fileobj.close()
-#                 sys.exit(0)
-
-#             elif(message.strip() == ""):
-#                 print("Error!! Empty message content")
-#                 continue;
-            
-#             key.fileobj.send(message.encode())
-#             send_message = False
-        
-#         else:
-#             print("No events")
-#             break;
-            
-
-
 import socket
 import selectors
 import sys
@@ -140,12 +9,13 @@ STATE_WAIT_FOR_RESPONSE = 2
 STATE_SEND_MESSAGE = 3
 STATE_READ_MESSAGE = 4
 STATE_SELECT_CHAT = 5
+STATE_USER_CHAT = 6
 
 # Initialize the client state
 client_state = STATE_SEND_LOGIN_DETAILS
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-IP_address = "172.16.0.70"
+IP_address = "172.16.7.62"
 port = 8888
 server.connect((IP_address, port))
 
@@ -155,6 +25,10 @@ selector_object = selectors.DefaultSelector()
 events = selectors.EVENT_READ | selectors.EVENT_WRITE
 selector_object.register(server, events)
 
+# Save the current client username for the session
+current_username = ""
+
+''' Helper functions '''
 def serve_authentication_options():
     user_option = input("Welcome to SWE chat.\nEnter 1 to signup or 2 to login >> ")
     if user_option not in ["1", "2"]:
@@ -169,6 +43,8 @@ def send_login_signup_details(user_option):
         print("\nEntering sign up menu...")
         username = input("Enter your preferred username >> ")
         server.send(username.encode())
+        global current_username 
+        current_username = username
 
         user_password = input("Enter your preferred password >> ")
         server.send(user_password.encode())
@@ -180,6 +56,7 @@ def send_login_signup_details(user_option):
         print("\nEntering login menu...")
         username = input("Enter your username >> ")
         server.send(username.encode())
+        current_username = username
 
         user_password = input("Enter your password >> ")
         server.send(user_password.encode())
@@ -187,21 +64,72 @@ def send_login_signup_details(user_option):
         user_ip = server.getsockname()[0]
         server.send(user_ip.encode())
 
-    server_response = server.recv(2048).decode()
+    server_reply = server.recv(2048).decode()
     
 
 
     # Scaffolding
     # print("Server response = ", server_response)
 
-    if(server_response == "1"):
-        return 1;
+    if(server_reply == "1"):
+        return 1
     else:
-        return -1;
+        return -1
+
+def display_chat_selection_menu():
+    print("Selecting chat")
+
+    #Prompt server to serve user list for chat selection
+    select_chat_prompt = "selectChatMenu"
+    server.send(select_chat_prompt.encode())
+
+    num_users = 0
+    username_list = [] #List for maintaining usernames sent from server, to send the actual requested username back to the server
+    username = server.recv(2048).decode()
+    concat_string = ""
+
+    while(username != "/00/"):
+        concat_string += username
+        concat_string.strip("\n")
+        if(concat_string[-4:-1] == "/00"):
+            break
+        username = server.recv(2048).decode()
+        
+    # Process incoming list of users 
+    username_list = concat_string.split("ld00") 
+    username_list = username_list[:-1] 
+    current_name_position = 0       
+    for s in username_list:
+        if(s.strip() == current_username):
+            current_name_position = num_users
+            continue
+        print(num_users, ". " , s)
+        num_users+=1
+    
+    # Remove current client username from list
+    username_list.pop(current_name_position)
+
+    # Prompt server to serve retrieve chat function - take user selection and retrieve chat
+    retrieve_chat_prompt = "retrieveChatMenu"
+    server.send(retrieve_chat_prompt.encode()) #Prompt server to take requested user selection and retrieve chat
+
+    # Take client selection of user to chat with
+    try:
+        user_selection = int(input("Enter the number of the user you would like to chat with >> "))
+    
+    except ValueError:
+        server.send("".encode())
+        print("Error! Closing connection")
+        sys.exit(0)
+
+    # Send requested username to server
+    selected_username = username_list[user_selection].strip()
+    print("Selected user - ", selected_username)
+    value= server.send(selected_username.encode())
+    print(value)
 
 
-   
-
+# Communicate with server
 while True:
     print("Here")
     events = selector_object.select()
@@ -210,9 +138,6 @@ while True:
         if client_state == STATE_SEND_LOGIN_DETAILS:
             user_option = serve_authentication_options()
             server_response = send_login_signup_details(user_option)
-
-            #Scaffolding
-            # print("Second server response = ", server_response)
 
             if(server_response == 1):
                 print("Success")
@@ -242,17 +167,43 @@ while True:
                 print("Connection closing")
                 server.close()
                 sys.exit(0)
-            # print(f"Server message: {message}")
             client_state = STATE_WAIT_FOR_RESPONSE
 
         elif client_state == STATE_SELECT_CHAT: 
-            
-            pass
+            display_chat_selection_menu()
+            num_chats = 0
+            chat_list = [] #List for maintaining usernames sent from server, to send the actual requested username back to the server
+            chat = server.recv(2048).decode()
+            concat_string = ""
 
+            while(chat != "/00/"):
+                concat_string += chat
+                concat_string.strip("\n")
+                if(concat_string[-4:-1] == "/00"):
+                    break
+                chat = server.recv(2048).decode()
+
+            # Split received chat content by delimiter
+            chat_content_list = []
+            chat_content_list = concat_string.split("ld00")
+            chat_content_list.remove("/00/")
+            for s in chat_content_list:
+                print(">>", s)
+
+            #Pass control over to chat functionality
+            client_state = STATE_USER_CHAT
+
+        elif client_state == STATE_USER_CHAT:
+            print("Under construction by ssblank")
+            sys.exit(0)
         
 
 
 
+
+            
+
+            
         #Scaffolding
         print("Current state >> ", client_state)
     
