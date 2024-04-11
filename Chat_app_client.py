@@ -196,6 +196,7 @@ while True:
         elif client_state == STATE_USER_CHAT:
             print("Under construction by ssblank")
             sys.exit(0)
+        #chat_in_progress
         
 
 

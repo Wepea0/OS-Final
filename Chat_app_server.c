@@ -112,6 +112,7 @@ void * handle_client(void* client_socket){
 
 
     int value = recv(client_fd, &client_message, sizeof(client_message), 0);
+
     while(value > 0){
         puts("While start");
         // Empty packet is received from client, connection is closed
@@ -146,6 +147,7 @@ void * handle_client(void* client_socket){
             // open_chat(client_fd, client_username, requested_username);
 
         }
+        
 
 
         //Receive login or signup option 
