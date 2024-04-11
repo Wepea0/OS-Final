@@ -33,6 +33,21 @@ int is_chat_open(char *client, char *requested_user, char **chat_list, char *cha
 int retrieve_chat(char *chat_filename, char **chat_contents);
 
 
+/**
+ * Writes a new message between clients to their chat file.
+ *
+ * @param chat_filename  a pointer to the chat file for 2 clients.
+ * @param new_line dereferenced pointer to the actual content that is to be written to the file
+ * @return returns 1 if the file write was successful, -1 if the write failed.
+ */
+int write_to_chat_file(char *chat_filename, char* new_line);
+
+/** Creates a chat file for 2 clients engaging for the first time
+ *
+ * @return n returns 1 if file is sucesfully create, -1 if file creation fails
+ */
+int create_new_chat_file(char *client1_name, char *client2_name);
+
 
 
 
