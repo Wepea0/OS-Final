@@ -125,14 +125,14 @@ void * handle_client(void* client_socket){
         }
 
         //Serve client the select chat option after it is selected
-        if(strcmp(client_message, "selectChatMenu") == 0){
+        else if(strcmp(client_message, "selectChatMenu") == 0){
             puts("Serving select chat menu");
             printf("Client message - %s\n", client_message);
             serve_chat_menu(client_fd, client_username);
         }
 
         //Get user chat selection
-        if(strcmp(client_message, "retrieveChatMenu") == 0){
+        else if(strcmp(client_message, "retrieveChatMenu") == 0){
             puts("Serving retrieve chat menu");
             char requested_user_index[5];
             char requested_username[100];
@@ -173,6 +173,17 @@ void * handle_client(void* client_socket){
         //Might have to do away with this else
         else{
             puts("In else");
+            puts("Writing chat content to file");
+            // Assuming every message is in the format --> "Username:<message>"
+            //identify the relevant file
+            //open relevant file
+            //append to the file
+            //confirm write in terminal
+            //close file
+            write_to_chat_file(chat_ID, client_message);
+
+
+
             // char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
             // strcpy(final_server_reply, server_message);
             // strcat(final_server_reply, client_message);
@@ -418,6 +429,9 @@ int open_chat(int client_fd, char *curr_username, char *requested_username){
     }
     else{
         puts("Conversation does not exist");
+        puts("Attempting to create the conversation");
+        create_new_chat_file(curr_username, requested_username);
+        return 1;
     }
     return -1;
 }
@@ -438,7 +452,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("172.16.7.62");
+	server.sin_addr.s_addr = inet_addr("172.16.1.110");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket

@@ -178,6 +178,66 @@ int retrieve_chat(char *chat_filename, char **chat_contents){
     return 1;
 }
 
+int create_new_chat_file(char *client1_name, char *client2_name) {
+    FILE *fileptr;
+    char *chat_directory = "chats/";
+    char filepath[100]; // store the full chat file name
+    char c1[100]; //store dereferenced client name 1
+    char c2[100]; //store dereferenced client name 2
+
+    // Copy client names into c1 and c2
+    strcpy(c1, client1_name);
+    strcpy(c2, client2_name);
+
+    // Build the file name using a series of concatenation operations
+    strcpy(filepath, chat_directory);
+    strcat(filepath, c1);
+    strcat(filepath, "_");
+    strcat(filepath, c2);
+    strcat(filepath, ".txt");
+
+    // Create the file
+    fileptr = fopen(filepath, "w");
+    if (fileptr == NULL) {
+        fprintf(stderr, "Error creating file\n");
+        return -1;
+    }
+    puts("File created");
+
+    // File creation successful
+    fclose(fileptr); // Close the file
+    return 1;
+}
+
+int write_to_chat_file(char *chat_filename, char* new_line) {
+    FILE *fileptr;
+    char *chat_directory = "chats/";
+    //2 accounts for string terminator character in each string since strlen doesnt't account for it
+    char *chat_filepath = (char *)malloc(strlen(chat_directory) +
+                                         strlen(chat_filename) +
+                                         2);
+
+    //Create string with complete filepath
+    strcpy(chat_filepath, chat_directory);
+    strcat(chat_filepath, chat_filename);
+    // strcat(chat_filepath, chat_suffix);
+    puts(chat_filepath);
+
+    //Open chat file in append mode
+    fileptr = fopen(chat_filepath, "a");
+    if (fileptr == NULL) {
+        return -1;
+    }
+
+    // Append data to the file
+    fprintf(fileptr, "%s", new_line);
+    puts("%s <-- written to file");
+
+    // Close the file
+    fclose(fileptr);
+    return 1;
+
+}
 
 // int main(){
 //     // char *chat_list[100];
@@ -220,3 +280,5 @@ int retrieve_chat(char *chat_filename, char **chat_contents){
 
 //     return 1;
 // }
+
+

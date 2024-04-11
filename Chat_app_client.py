@@ -15,7 +15,7 @@ STATE_USER_CHAT = 6
 client_state = STATE_SEND_LOGIN_DETAILS
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-IP_address = "172.16.7.62"
+IP_address = "172.16.1.110"
 port = 8888
 server.connect((IP_address, port))
 
