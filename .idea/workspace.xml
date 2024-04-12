@@ -13,12 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8ea9554b-8e62-4fec-ae16-6ce9d5aed256" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Chat_app_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/Chat_app_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Chat_app_server.c" beforeDir="false" afterPath="$PROJECT_DIR$/Chat_app_server.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/File_Operations.c" beforeDir="false" afterPath="$PROJECT_DIR$/File_Operations.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/File_Operations.h" beforeDir="false" afterPath="$PROJECT_DIR$/File_Operations.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/co" beforeDir="false" afterPath="$PROJECT_DIR$/co" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/user_details.txt" beforeDir="false" afterPath="$PROJECT_DIR$/user_details.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -229,7 +224,7 @@
       <workItem from="1712740647822" duration="2436000" />
       <workItem from="1712753859336" duration="15791000" />
       <workItem from="1712833833694" duration="565000" />
-      <workItem from="1712834431164" duration="2191000" />
+      <workItem from="1712834431164" duration="3985000" />
     </task>
     <servers />
   </component>
