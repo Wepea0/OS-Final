@@ -171,6 +171,10 @@ void * handle_client(void* client_socket){
                 // Write client message to chat file in case message received is valid and is not a close connection reques
                 write_to_chat_file(chat_ID, user_message);
 
+                //Test send message back to recipient
+                int send_success = send(client_fd, &user_message, strlen(user_message), 0);
+                printf("\nSend success - %d\n", send_success);
+
                 //Attempt to send message to other user in conversation
 
 
@@ -460,7 +464,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("172.16.2.21");
+	server.sin_addr.s_addr = inet_addr("172.16.4.118");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket

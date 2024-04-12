@@ -28,6 +28,7 @@ Will need to match user names to IDs
 ISSUE - Unpredictability 
 1. With login info (password and IP being sent together)
 2. With chat participant assignment and chat paricipant ID assignment from server, leads to segmentation faults at times. Need to identify trend there
+3. On selecting (usually empty chats - 4, 5) server retrieves gibberish (invalid bytes, cause client to crash) from chat file 
 TODO - Send username, password and IP address together and use delimiter (solves 1)
 
 

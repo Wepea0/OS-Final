@@ -16,7 +16,7 @@ STATE_USER_CHAT = 6
 client_state = STATE_SEND_LOGIN_DETAILS
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-IP_address = "172.16.2.21"
+IP_address = "172.16.4.118"
 port = 8888
 server.connect((IP_address, port))
 
@@ -31,6 +31,9 @@ current_username = ""
 
 #Username of the user currently being chatted with
 selected_username = ""
+
+# Variable to pass end program signal from second thread to main thread
+end_program = False
 
 ''' Helper functions '''
 def serve_authentication_options():
@@ -133,53 +136,89 @@ def display_chat_selection_menu():
     print(value)
 
 def send_message(server):
-    user_message = input("Enter your message >> ", end="")
-    server.send(user_message.encode())
+    original_user_message = input("Enter your message >> ")
+    if(original_user_message.strip() == "cLoSe123"):
+        print("Connection closing")
+        
+        # ISSUE - At this point, redirect to login/signup menu instead of exit
+        global end_program
+        end_program = True
+        message_sent_event.set()
+        return -1
+        # sys.exit(0)
 
-def receive_replies(thread_event, server):
+    else:
+        user_message = "\n" + current_username + ": " + original_user_message
+        server.send(user_message.encode())
+    return 1
+
+def receive_replies(thread_event, message_sent_event, server):
     '''Function for setting client to receive mode until user attempts to send message'''
     start_chat_signal = "chat_in_progress"
     value= server.send(start_chat_signal.encode())
-    print(value)
+    # print(value)
+    print("Type `send` to send a message")
 
-    # while True:
-    #     if not send_message_thread.is_Set():
-    #         server_reply = server.recv(2048).decode()
-    #         print(server_reply)
 
-    #     else:
-    #         send_message(server)
-    #         send_message_thread.clear()
-    while not thread_event.is_set():
-        #Change server to non-blocking otherwise code gets stuck here if no data is sent from server
-        server.setblocking(False)
+    while True:
+        if not thread_event.is_set():
+            server.setblocking(False)
 
-        try:
-            server_reply = server.recv(2048).decode()
-            if(server_reply):
-                print(server_reply)
+            try:
+                server_reply = server.recv(2048).decode()
+                if(server_reply):
+                    print(server_reply)
+                else:
+                    print(".", end="/ ")
+            except BlockingIOError:
+                pass
+                # print("No data available")
+
+        else:
+            print("Switching to user send mode")
+            if(send_message(server) == -1):
+                break
             else:
-                print(".", end="/ ")
-        except BlockingIOError:
-            pass
-            # print("No data available")
+                thread_event.clear()
+                message_sent_event.set()
 
 
-    print("Switching to user send mode")
-    original_user_message = input("Enter your message. Enter `cLoSe123`to close the connection >> ")
+    # while not thread_event.is_set():
+        #Change server to non-blocking otherwise code gets stuck here if no data is sent from server
+        # server.setblocking(False)
 
-    user_message = current_username + ": " + original_user_message
+        # try:
+        #     server_reply = server.recv(2048).decode()
+        #     if(server_reply):
+        #         print(server_reply)
+        #     else:
+        #         print(".", end="/ ")
+        # except BlockingIOError:
+        #     pass
+        #     # print("No data available")
+
+
+    # print("Switching to user send mode")
+    # original_user_message = input("Enter your message. Enter `cLoSe123`to close the connection >> ")
+
+    # user_message = "\n" +current_username + ": " + original_user_message
     # print("user_message -- ", user_message)
-    if(original_user_message.strip() == "cLoSe123"):
-        print("Connection closing")
-        server.close()
-        server.setblocking(True)
+    # if(original_user_message.strip() == "cLoSe123"):
+    #     print("Connection closing")
+    #     server.close()
+    #     server.setblocking(True)
 
-        # ISSUE - At this point, redirect to login/signup menu instead of exit
-        sys.exit(0)
-    else:
-        server.send(user_message.encode())
+    #     # ISSUE - At this point, redirect to login/signup menu instead of exit
+    #     end_program = True
+    #     # sys.exit(0)
 
+    # else:
+    #     server.send(user_message.encode())
+    
+    # # Set message_sent_event to True to restart loop for listening for replies from server
+    # message_sent_event.set()
+
+    # receive_replies(thread_event, message_sent_event, server)
 
     
 
@@ -262,7 +301,6 @@ while True:
             client_state = STATE_USER_CHAT
 
         elif client_state == STATE_USER_CHAT:
-            print("Type `send` to send a message")
             #Client should be attempting to read from server until user wants to send a message
             #Before client sends a message to the server, should send primer message (chat_in_progress)
             #Server will stay in loop until user wants to exit the chat 
@@ -273,29 +311,41 @@ while True:
             #Second step: Create thread event to monitor for user entry eevnt 
             thread_event = threading.Event()
 
+            # Message sent event to return the client to a state of listening for server replies
+            message_sent_event = threading.Event()
+
             #Third step: Create thread to run receive replies function
             send_message_thread = threading.Thread(name = "send_message_thread",
                                                    target = receive_replies, 
-                                                   args=(thread_event, server))
+                                                   args=(thread_event, message_sent_event, server, ))
             
             #Fourth step: Start thread
             send_message_thread.start()
 
             #Fifth step: Run loop to monitor for user input
             while True:
-                if input().lower() == "send":
-                    print("User break detected")
-                    thread_event.set()
+                if end_program:
                     break
-                else:
+                while input().lower() != "send":
                     print("Still receiving")
+                    thread_event.clear()
+
+                print("User break detected")
+                thread_event.set()
+
+                message_sent_event.wait()
+                message_sent_event.clear()
+                    
+                
+                    
             
             #Sixth step: Join thread to main execution thread to finish running program    
             send_message_thread.join()
 
+
         
             
-            print("Under construction by ssblank")
+            print("Ending program, closing connection")
             sys.exit(0)
         #chat_in_progress
         
