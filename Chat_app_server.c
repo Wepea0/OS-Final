@@ -143,57 +143,49 @@ void * handle_client(void* client_socket){
             
             printf("Client message - %s \nSubmitted user selection - %s --\n", client_message, requested_username);
 
-            open_chat(client_fd, requested_username, client_username);
+            open_chat(client_fd, client_username, requested_username);
             // open_chat(client_fd, client_username, requested_username);
 
         }
-        
+
+        // Chat between two users is in progress 
+        else if(strcmp(client_message, "chat_in_progress") == 0){
+            puts("Chat in progress");
+            char user_message[2000];
+            int return_value;
+
+            // Read the message sent by the user. 
+            //Recv is blocing so it will wait until some data is read before it moves on 
+            return_value = recv(client_fd, &user_message, sizeof(user_message), 0);
+
+            //If client wants to end connection, this text sequence will cause 
+            while(return_value > 0){
+                
+                //If client closes connection abruptly, this will close the connection
+                if(return_value <= 0){
+                    puts("Closing connection --");
+                    break;
+                }
+                printf("Writing message to file %s ", user_message);
+
+                // Write client message to chat file in case message received is valid and is not a close connection reques
+                write_to_chat_file(chat_ID, user_message);
+
+                //Attempt to send message to other user in conversation
 
 
-        //Receive login or signup option 
-        //Route to appropriate function based on response 
-        //In signup function 
-            //Essential
-                //Write passed user name, password and find IP address to add to user_details 
-            //Phase 2
-                //Access user details file
-                //Function to read all names in the file (to check whether name already exists)**
-                //Function to write, name, username and IP (need to get IP) to file
-            //Separate function to determine whether username has already been used. If yes, return message with error and close connection (prelim), re-serve initial options(final)
-            //If not, add username, IP address and password to list. (Decide on format, should be optimized for later seraches (username used already & find details for login))
-            //Return success message, send to select chat screen
-        //In login function
-            //Access user details file
-            //Determine whether username, password combo exists in file
-            //If it does, return success message and send to select chat screen
-            //If it does not, return error messsage and return message with error and close connection (prelim), re-serve initial options(final)
-        //Select chat screen
-            //Serve list of all users. If user selects someone with whom prior chat exists, print prior messages else create new file and print file content (empty)
-            //List of chats should be stored somewhere. 
-        
+                //Receive next message from the user
+                return_value = recv(client_fd, &user_message, sizeof(user_message), 0); 
 
-        //Might have to do away with this else
-        else{
-            puts("In else");
-            puts("Writing chat content to file");
-            // Assuming every message is in the format --> "Username:<message>"
-            //identify the relevant file
-            //open relevant file
-            //append to the file
-            //confirm write in terminal
-            //close file
-            write_to_chat_file(chat_ID, client_message);
+            }
 
+            break;
 
-
-            // char *final_server_reply = (char *)malloc(sizeof(server_message) + sizeof(client_message) + 1);
-            // strcpy(final_server_reply, server_message);
-            // strcat(final_server_reply, client_message);
-            // send(client_fd, final_server_reply, strlen(final_server_reply), 0);
-            // puts(final_server_reply);
-            // strcpy(client_message, empty_array);
         }
-        puts("End start");
+        
+
+        
+        
         value = recv(client_fd, &client_message, sizeof(client_message), 0);
         
 
@@ -291,6 +283,7 @@ int login_user(char *username, char *password, char *IP_address){
         //Remove newline character that is read from the end of line in file.
         curr_detail_line[strlen(curr_detail_line) - 1]  = '\0';
 
+
         //Skip "Username: " formatting from file and compare actual username values
         char *username_comp = curr_detail_line + username_offset;
 
@@ -361,7 +354,6 @@ int login_user(char *username, char *password, char *IP_address){
 
 }
 
-
 int serve_chat_menu(int client_fd, char *curr_username){
     get_user_list(user_list);
     char end_list_string[] = "/00/";
@@ -408,6 +400,11 @@ int open_chat(int client_fd, char *curr_username, char *requested_username){
     int value;
     value = is_chat_open(curr_username, requested_username, chat_list, chat_ID);
 
+   
+
+    //Find IP address of requested user and assign it to participant IP
+    get_user_IP(requested_username);
+
     if(value == 1){
         puts("Retrieving chat");
         puts(chat_ID);
@@ -429,10 +426,19 @@ int open_chat(int client_fd, char *curr_username, char *requested_username){
         return 1;
 
     }
+
     else{
         puts("Conversation does not exist");
         puts("Attempting to create the conversation");
         create_new_chat_file(curr_username, requested_username);
+
+        
+        char test_string[] = "EMPTY CHATld00/00/"; 
+        send(client_fd, &test_string, strlen(test_string), 0);
+        // send(client_fd, &list_delimiter, strlen(list_delimiter), 0);
+        // send(client_fd, &end_list_string, strlen(end_list_string), 0);
+
+        //Will send client empty string but chat
         return 1;
     }
     return -1;
@@ -454,7 +460,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("172.16.1.110");
+	server.sin_addr.s_addr = inet_addr("172.16.2.21");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket

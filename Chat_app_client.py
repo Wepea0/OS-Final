@@ -2,6 +2,7 @@ import socket
 import selectors
 import sys
 import json
+import threading
 
 # Define the states
 STATE_SEND_LOGIN_DETAILS = 1
@@ -15,7 +16,7 @@ STATE_USER_CHAT = 6
 client_state = STATE_SEND_LOGIN_DETAILS
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-IP_address = "172.16.1.110"
+IP_address = "172.16.2.21"
 port = 8888
 server.connect((IP_address, port))
 
@@ -27,6 +28,9 @@ selector_object.register(server, events)
 
 # Save the current client username for the session
 current_username = ""
+
+#Username of the user currently being chatted with
+selected_username = ""
 
 ''' Helper functions '''
 def serve_authentication_options():
@@ -65,16 +69,11 @@ def send_login_signup_details(user_option):
         server.send(user_ip.encode())
 
     server_reply = server.recv(2048).decode()
-    
 
+    print("server reply - ", server_reply)
 
-    # Scaffolding
-    # print("Server response = ", server_response)
+    return server_reply
 
-    if(server_reply == "1"):
-        return 1
-    else:
-        return -1
 
 def display_chat_selection_menu():
     print("Selecting chat")
@@ -97,13 +96,17 @@ def display_chat_selection_menu():
         
     # Process incoming list of users 
     username_list = concat_string.split("ld00") 
-    username_list = username_list[:-1] 
+    username_list = username_list[:-1] \
+
+    # New list without username of the current logged in client
+    new_username_list = []
     current_name_position = 0       
     for s in username_list:
         if(s.strip() == current_username):
             current_name_position = num_users
             continue
         print(num_users, ". " , s)
+        new_username_list.append(s)
         num_users+=1
     
     # Remove current client username from list
@@ -123,10 +126,64 @@ def display_chat_selection_menu():
         sys.exit(0)
 
     # Send requested username to server
-    selected_username = username_list[user_selection].strip()
+    global selected_username
+    selected_username = new_username_list[user_selection].strip()
     print("Selected user - ", selected_username)
     value= server.send(selected_username.encode())
     print(value)
+
+def send_message(server):
+    user_message = input("Enter your message >> ", end="")
+    server.send(user_message.encode())
+
+def receive_replies(thread_event, server):
+    '''Function for setting client to receive mode until user attempts to send message'''
+    start_chat_signal = "chat_in_progress"
+    value= server.send(start_chat_signal.encode())
+    print(value)
+
+    # while True:
+    #     if not send_message_thread.is_Set():
+    #         server_reply = server.recv(2048).decode()
+    #         print(server_reply)
+
+    #     else:
+    #         send_message(server)
+    #         send_message_thread.clear()
+    while not thread_event.is_set():
+        #Change server to non-blocking otherwise code gets stuck here if no data is sent from server
+        server.setblocking(False)
+
+        try:
+            server_reply = server.recv(2048).decode()
+            if(server_reply):
+                print(server_reply)
+            else:
+                print(".", end="/ ")
+        except BlockingIOError:
+            pass
+            # print("No data available")
+
+
+    print("Switching to user send mode")
+    original_user_message = input("Enter your message. Enter `cLoSe123`to close the connection >> ")
+
+    user_message = current_username + ": " + original_user_message
+    # print("user_message -- ", user_message)
+    if(original_user_message.strip() == "cLoSe123"):
+        print("Connection closing")
+        server.close()
+        server.setblocking(True)
+
+        # ISSUE - At this point, redirect to login/signup menu instead of exit
+        sys.exit(0)
+    else:
+        server.send(user_message.encode())
+
+
+    
+
+    
 
 
 # Communicate with server
@@ -139,12 +196,12 @@ while True:
             user_option = serve_authentication_options()
             server_response = send_login_signup_details(user_option)
 
-            if(server_response == 1):
+            if(server_response.strip() == "1"):
                 print("Success")
 
                 client_state = STATE_SELECT_CHAT
             else:
-                print("Error! Closing connection")
+                print("Error! Wrong details, closing connection")
                 # TODO #10 Test code - Ideally should return to login/sign up menu. Need support from server-side to implement
                 server.close()
                 sys.exit(-1)
@@ -171,29 +228,73 @@ while True:
 
         elif client_state == STATE_SELECT_CHAT: 
             display_chat_selection_menu()
-            num_chats = 0
-            chat_list = [] #List for maintaining usernames sent from server, to send the actual requested username back to the server
-            chat = server.recv(2048).decode()
-            concat_string = ""
 
+            chat = server.recv(2048).decode()
+            hold_string = ""
             while(chat != "/00/"):
-                concat_string += chat
-                concat_string.strip("\n")
-                if(concat_string[-4:-1] == "/00"):
+                hold_string += chat
+                hold_string.strip("\n")
+                if(hold_string[-4:-1] == "/00"):
                     break
                 chat = server.recv(2048).decode()
 
             # Split received chat content by delimiter
             chat_content_list = []
-            chat_content_list = concat_string.split("ld00")
-            chat_content_list.remove("/00/")
-            for s in chat_content_list:
-                print(">>", s)
+            chat_content_list = hold_string.split("ld00")
+            print(chat_content_list)
+            try:
+                chat_content_list.remove("/00/")
+            except:
+                pass
+            print("Showing chat history with", selected_username)
+            if chat_content_list == [""]:
+                print("This user has not chatted with you yet")
+                
+            else:
+                for s in chat_content_list :
+                    if s.strip() == "EMPTY CHAT":
+                        print("This user has not chatted with you yet")
+                        break
+                    if s.strip() != "":
+                        print(">>", s)
 
             #Pass control over to chat functionality
             client_state = STATE_USER_CHAT
 
         elif client_state == STATE_USER_CHAT:
+            print("Type `send` to send a message")
+            #Client should be attempting to read from server until user wants to send a message
+            #Before client sends a message to the server, should send primer message (chat_in_progress)
+            #Server will stay in loop until user wants to exit the chat 
+            #   Will allow user to logout or select new chat
+
+            #To achieve this, a multithreaded approach will be used
+            #First step: Create function to run in thread (done above receive_replies())
+            #Second step: Create thread event to monitor for user entry eevnt 
+            thread_event = threading.Event()
+
+            #Third step: Create thread to run receive replies function
+            send_message_thread = threading.Thread(name = "send_message_thread",
+                                                   target = receive_replies, 
+                                                   args=(thread_event, server))
+            
+            #Fourth step: Start thread
+            send_message_thread.start()
+
+            #Fifth step: Run loop to monitor for user input
+            while True:
+                if input().lower() == "send":
+                    print("User break detected")
+                    thread_event.set()
+                    break
+                else:
+                    print("Still receiving")
+            
+            #Sixth step: Join thread to main execution thread to finish running program    
+            send_message_thread.join()
+
+        
+            
             print("Under construction by ssblank")
             sys.exit(0)
         #chat_in_progress

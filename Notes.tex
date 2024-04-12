@@ -25,9 +25,17 @@ TODO - Add timeout to login and signup on client side to restart process for the
 Send integer representing desired chat, run chat search with current username and desired usernamed
 Will need to match user names to IDs 
 
-ISSUE - Unpredictability With login info (password and IP being sent together)
-TODO - Send username, password and IP address together and use delimiter
+ISSUE - Unpredictability 
+1. With login info (password and IP being sent together)
+2. With chat participant assignment and chat paricipant ID assignment from server, leads to segmentation faults at times. Need to identify trend there
+TODO - Send username, password and IP address together and use delimiter (solves 1)
+
 
  FIXED - With user list reception on client side, delimiting character showing end of list is not recognized as end of list leading to a stall
 
 TODO: Create new file for chat that doesn't exist
+
+SAMUEL 
+- Need to update the chat_ID variable for new chat between two clients to enable us to write to the right file
+- Server needs to recognize the chat_in_progress and then read user messages (in else)
+- Should user be able to return to chat selection menu. Basically end a chat with someone and start a chat with someone else without closing the connection and logging out

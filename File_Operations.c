@@ -9,8 +9,68 @@ char *chat_file;
 char *chat_contents[1000];
 char chat_ID[1000];
 char *user_list[100];
+char chat_participant[100];
+char chat_participant_IP[100];
 
 
+void get_user_IP(char *username){
+    char *username_prefix = "Username"; 
+    int username_offset = strlen("Username: ");
+    char *IP_prefix = "IP Address"; 
+    int ip_offset = strlen("IP Address: ");
+
+
+    char curr_detail_line[1000];
+    char empty_array[100];
+
+    
+    //Open user_details file
+    FILE *fileptr;
+    fileptr = fopen("user_details.txt", "r+");
+
+    while(fgets(curr_detail_line, 1000, fileptr)){
+        //Remove newline character that is read from the end of line in file.
+        curr_detail_line[strlen(curr_detail_line) - 1]  = '\0';
+
+        //Skip "Username: " formatting from file and compare actual username values
+        char *username_comp = curr_detail_line + username_offset;
+
+        //Find username of other chat participant
+        if(strcmp(username_comp, username) == 0){
+            puts("Username match");
+
+            //Read password line
+            fgets(curr_detail_line, 1000, fileptr);
+
+            //Read IP address line
+            fgets(curr_detail_line, 1000, fileptr);
+
+            //Remove newline character that is read from the end of line in file.
+            curr_detail_line[strlen(curr_detail_line) - 1]  = '\0';
+
+            printf("IP address of %s is %s\n", username, curr_detail_line);
+
+            //Skip "IP Address: " formatting from file and compare actual IP address values
+            char *IP_comp = curr_detail_line + ip_offset;
+
+            strcpy(chat_participant_IP, empty_array);
+            puts("Copying IP address");
+            strcpy(chat_participant_IP, IP_comp);
+            
+
+            strcpy(chat_participant, empty_array);
+            //Assign chat_particpant variable to name of other user in chat
+            strcpy(chat_participant, username);
+
+            printf("Current chat participant %s - ID - %s\n", chat_participant, chat_participant_IP); 
+            break;             
+
+    
+        }
+     }
+    fclose(fileptr);
+
+}
 
 int get_user_list(char **user_list){
     char *username_prefix = "Username"; 
@@ -57,7 +117,6 @@ int get_user_list(char **user_list){
     return 1;
 
 }
-
 
 int get_chat_files(char * folder, char **chat_list) {
     DIR *dir;
@@ -119,6 +178,7 @@ int is_chat_open(char *client, char *requested_user, char **chat_list, char *cha
             if((strcmp(requested_user, chat_user_1) == 0) || strcmp(requested_user, chat_user_2) == 0){
                 puts("Requested user found");
                 puts(chat_ID);
+
                 return 1;
             }
         }
@@ -206,6 +266,8 @@ int create_new_chat_file(char *client1_name, char *client2_name) {
 
     // File creation successful
     fclose(fileptr); // Close the file
+
+    
     return 1;
 }
 
@@ -231,7 +293,7 @@ int write_to_chat_file(char *chat_filename, char* new_line) {
 
     // Append data to the file
     fprintf(fileptr, "%s", new_line);
-    puts("%s <-- written to file");
+    printf("%s ---> written to file", new_line);
 
     // Close the file
     fclose(fileptr);
@@ -250,7 +312,6 @@ int write_to_chat_file(char *chat_filename, char* new_line) {
 //     //         printf("%d - %s\n", i, chat_list[i]); 
 //     //         i++;         
 //     //     }
-
 //     // is_chat_open("Fastapi", "ThorganMichigan.txt", chat_list, chat_ID);
 
 //     // if(chat_ID != NULL){
@@ -275,8 +336,6 @@ int write_to_chat_file(char *chat_filename, char* new_line) {
 //         printf("%s\n", user_list[i]);
 //         i++;
 //     }
-
-
 
 //     return 1;
 // }

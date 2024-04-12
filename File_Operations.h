@@ -16,6 +16,13 @@ extern char *chat_contents[1000];
 //Contain filename of selected user conversation
 extern char chat_ID[1000];
 
+//Contain name of other user being in current conversation
+extern char chat_participant[100];
+
+//Contain IP address of other user in current conversation
+extern char chat_participant_IP[100];
+
+
 //Return array with names of all users
 int get_user_list(char **user_list);
 
@@ -48,8 +55,12 @@ int write_to_chat_file(char *chat_filename, char* new_line);
  */
 int create_new_chat_file(char *client1_name, char *client2_name);
 
-
-
+/**
+ * Assigns the IP address of the other participant in the chat to chat_participant variable 
+ * 
+ * @param username the other participant in the chat
+ */
+void get_user_IP(char *username);
 
 
 
