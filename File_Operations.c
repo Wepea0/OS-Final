@@ -262,7 +262,7 @@ int create_new_chat_file(char *client1_name, char *client2_name) {
         fprintf(stderr, "Error creating file\n");
         return -1;
     }
-    puts("File created");
+    puts("File created\n");
 
     // File creation successful
     fclose(fileptr); // Close the file
