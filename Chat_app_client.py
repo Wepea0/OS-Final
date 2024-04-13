@@ -54,10 +54,10 @@ def send_login_signup_details(user_option):
         current_username = username
 
         user_password = input("Enter your preferred password >> ")
-        server.send(user_password.encode())
+        server.sendall(user_password.encode() + b'\0')  # Add a null byte as a delimiter
 
         user_ip = server.getsockname()[0]
-        server.send(user_ip.encode())
+        server.send(user_ip.encode() + b'\0')
 
     else:
         print("\nEntering login menu...")
@@ -360,5 +360,3 @@ while True:
         print("Current state >> ", client_state)
     
         # sys.exit(0)
-
-

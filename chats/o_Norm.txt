@@ -1,7 +1,1 @@
 o: Normy Pormyyy
-o: gho
-o: Set up in the heart 
-o: eurostepchat_in_progress
-o: hjn_progresschat_in_progress
-o: non_progresschat_in_progress
-o: _in_progresschat_in_progress

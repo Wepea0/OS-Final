@@ -1,7 +1,1 @@
 chat_in_progress
-o: Hey Senam
-o: Speed Trap
-o: Diamond Dallas
-o: New text message
-o: fg
-o: ghd
