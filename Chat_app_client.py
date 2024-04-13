@@ -16,7 +16,7 @@ STATE_USER_CHAT = 6
 client_state = STATE_SEND_LOGIN_DETAILS
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-IP_address = "172.16.4.118"
+IP_address = "192.168.102.72"
 port = 8888
 server.connect((IP_address, port))
 
@@ -54,10 +54,9 @@ def send_login_signup_details(user_option):
         current_username = username
 
         user_password = input("Enter your preferred password >> ")
-        server.sendall(user_password.encode() + b'\0')  # Add a null byte as a delimiter
+        server.sendall(user_password.encode()  + b'\0')  # Add a null byte as a delimiter
 
-        user_ip = server.getsockname()[0]
-        server.send(user_ip.encode() + b'\0')
+     
 
     else:
         print("\nEntering login menu...")
@@ -66,17 +65,14 @@ def send_login_signup_details(user_option):
         current_username = username
 
         user_password = input("Enter your password >> ")
-        server.send(user_password.encode())
+        server.sendall(user_password.encode()  + b'\0')  # Add a null byte as a delimiter
 
-        user_ip = server.getsockname()[0]
-        server.send(user_ip.encode())
-
+        
     server_reply = server.recv(2048).decode()
 
     print("server reply - ", server_reply)
 
     return server_reply
-
 
 def display_chat_selection_menu():
     print("Selecting chat")
@@ -149,7 +145,7 @@ def send_message(server):
 
     else:
         user_message = "\n" + current_username + ": " + original_user_message
-        server.send(user_message.encode())
+        server.sendall(user_message.encode() + b'\0')
     return 1
 
 def receive_replies(thread_event, message_sent_event, server):
@@ -169,13 +165,18 @@ def receive_replies(thread_event, message_sent_event, server):
                 if(server_reply):
                     print(server_reply)
                 else:
-                    print(".", end="/ ")
+                    print("Server error")
+                    message_sent_event.set()
+                    sys.exit(0)
+
+
+                    
             except BlockingIOError:
                 pass
                 # print("No data available")
 
         else:
-            print("Switching to user send mode")
+            # print("Switching to user send mode")
             if(send_message(server) == -1):
                 break
             else:
@@ -183,46 +184,6 @@ def receive_replies(thread_event, message_sent_event, server):
                 message_sent_event.set()
 
 
-    # while not thread_event.is_set():
-        #Change server to non-blocking otherwise code gets stuck here if no data is sent from server
-        # server.setblocking(False)
-
-        # try:
-        #     server_reply = server.recv(2048).decode()
-        #     if(server_reply):
-        #         print(server_reply)
-        #     else:
-        #         print(".", end="/ ")
-        # except BlockingIOError:
-        #     pass
-        #     # print("No data available")
-
-
-    # print("Switching to user send mode")
-    # original_user_message = input("Enter your message. Enter `cLoSe123`to close the connection >> ")
-
-    # user_message = "\n" +current_username + ": " + original_user_message
-    # print("user_message -- ", user_message)
-    # if(original_user_message.strip() == "cLoSe123"):
-    #     print("Connection closing")
-    #     server.close()
-    #     server.setblocking(True)
-
-    #     # ISSUE - At this point, redirect to login/signup menu instead of exit
-    #     end_program = True
-    #     # sys.exit(0)
-
-    # else:
-    #     server.send(user_message.encode())
-    
-    # # Set message_sent_event to True to restart loop for listening for replies from server
-    # message_sent_event.set()
-
-    # receive_replies(thread_event, message_sent_event, server)
-
-    
-
-    
 
 
 # Communicate with server
@@ -330,7 +291,7 @@ while True:
                     print("Still receiving")
                     thread_event.clear()
 
-                print("User break detected")
+                # print("User break detected")
                 thread_event.set()
 
                 message_sent_event.wait()

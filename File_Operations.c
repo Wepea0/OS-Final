@@ -9,68 +9,10 @@ char *chat_file;
 char *chat_contents[1000];
 char chat_ID[1000];
 char *user_list[100];
-char chat_participant[100];
 char chat_participant_IP[100];
 
 
-void get_user_IP(char *username){
-    char *username_prefix = "Username"; 
-    int username_offset = strlen("Username: ");
-    char *IP_prefix = "IP Address"; 
-    int ip_offset = strlen("IP Address: ");
 
-
-    char curr_detail_line[1000];
-    char empty_array[100];
-
-    
-    //Open user_details file
-    FILE *fileptr;
-    fileptr = fopen("user_details.txt", "r+");
-
-    while(fgets(curr_detail_line, 1000, fileptr)){
-        //Remove newline character that is read from the end of line in file.
-        curr_detail_line[strlen(curr_detail_line) - 1]  = '\0';
-
-        //Skip "Username: " formatting from file and compare actual username values
-        char *username_comp = curr_detail_line + username_offset;
-
-        //Find username of other chat participant
-        if(strcmp(username_comp, username) == 0){
-            puts("Username match");
-
-            //Read password line
-            fgets(curr_detail_line, 1000, fileptr);
-
-            //Read IP address line
-            fgets(curr_detail_line, 1000, fileptr);
-
-            //Remove newline character that is read from the end of line in file.
-            curr_detail_line[strlen(curr_detail_line) - 1]  = '\0';
-
-            printf("IP address of %s is %s\n", username, curr_detail_line);
-
-            //Skip "IP Address: " formatting from file and compare actual IP address values
-            char *IP_comp = curr_detail_line + ip_offset;
-
-            strcpy(chat_participant_IP, empty_array);
-            puts("Copying IP address");
-            strcpy(chat_participant_IP, IP_comp);
-            
-
-            strcpy(chat_participant, empty_array);
-            //Assign chat_particpant variable to name of other user in chat
-            strcpy(chat_participant, username);
-
-            printf("Current chat participant %s - ID - %s\n", chat_participant, chat_participant_IP); 
-            break;             
-
-    
-        }
-     }
-    fclose(fileptr);
-
-}
 
 int get_user_list(char **user_list){
     char *username_prefix = "Username"; 
@@ -133,7 +75,7 @@ int get_chat_files(char * folder, char **chat_list) {
     // Read the directory entries
     while ((entry = readdir(dir)) != NULL) {
         if (  (strcmp(entry -> d_name, "..") != 0) && (strcmp(entry->d_name, "." ) != 0)){
-            printf("%s\n", entry->d_name);
+            // printf("%s\n", entry->d_name);
             chat_list[number_of_chats] = entry->d_name;
             number_of_chats++;
 
@@ -163,7 +105,7 @@ int is_chat_open(char *client, char *requested_user, char **chat_list, char *cha
     int i = 0;
     while(strcmp(chat_list[i], "\0") != 0){
         strcpy(chat_ID, chat_list[i]);
-        puts(chat_ID);
+        // puts(chat_ID);
 
         // Split file name into user names
         chat_user_1 = strtok(chat_list[i], "_");
@@ -171,7 +113,7 @@ int is_chat_open(char *client, char *requested_user, char **chat_list, char *cha
         chat_user_2 = strtok(chat_user_2, ".");
 
 
-        printf("User %s <---> User %s\n", chat_user_1, chat_user_2);
+        // printf("User %s <---> User %s\n", chat_user_1, chat_user_2);
 
         if((strcmp(client, chat_user_1) == 0) || strcmp(client, chat_user_2) == 0){
             puts("Client found");
@@ -244,10 +186,23 @@ int create_new_chat_file(char *client1_name, char *client2_name) {
     char filepath[100]; // store the full chat file name
     char c1[100]; //store dereferenced client name 1
     char c2[100]; //store dereferenced client name 2
+    char hold_chatID[100];
 
     // Copy client names into c1 and c2
     strcpy(c1, client1_name);
     strcpy(c2, client2_name);
+
+    strcpy(hold_chatID, c1);
+    strcat(hold_chatID, "_");
+    strcat(hold_chatID, c2);
+
+    strcpy(chat_ID, hold_chatID);
+    
+
+
+
+
+
 
     // Build the file name using a series of concatenation operations
     strcpy(filepath, chat_directory);
@@ -262,7 +217,7 @@ int create_new_chat_file(char *client1_name, char *client2_name) {
         fprintf(stderr, "Error creating file\n");
         return -1;
     }
-    puts("File created");
+    printf("File created with name - %s\n", filepath);
 
     // File creation successful
     fclose(fileptr); // Close the file
@@ -293,6 +248,7 @@ int write_to_chat_file(char *chat_filename, char* new_line) {
 
     // Append data to the file
     fprintf(fileptr, "%s", new_line);
+    fflush(fileptr);
     printf("%s ---> written to file", new_line);
 
     // Close the file

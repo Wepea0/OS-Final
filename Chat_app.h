@@ -15,6 +15,12 @@ int serve_chat_menu(int client_fd, char *curr_username);
 int open_chat(int client_fd, char *curr_username, char *requested_username);
 
 int serve_login_signup_menu();
+/**
+ * Assigns the name of the other participant in the chat to chat_participant variable 
+ * 
+ * @param username the other participant in the chat
+ */
+char * assign_chat_participant(char *username, char * chat_participant);
 
 
 

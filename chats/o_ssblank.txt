@@ -1,0 +1,11 @@
+
+o: Hello blank
+o: Second message to blanks
+o: Are you online to blanks
+ssblank: Hey o
+o: Hey man
+ssblank: Did you see this
+ssblank: You better not be airing bro
+o: Message sent with no one on the other side
+ssblank: Brother are you online?
+o: Yeah bro what's upno one on the other side
