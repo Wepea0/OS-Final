@@ -68,6 +68,11 @@ Password: o
 IP Address: 172.16.2.21
 User ID: oo
 
+Username: samuel
+Password: samuel
+IP Address: 172.16.0.73
+User ID: samuelsamuel
+
 Username: senam_gt
 Password: reddress
 IP Address: 172.16.3.239
