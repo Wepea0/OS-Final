@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>OS-Chat Client</title>
+    <style>
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="bg-white">
+<div class="container">
+
+    <div class="card text-center shadow-lg" style="width: 55%; height: 80%">
+        <div class="card-header fs-3 bg-dark text-white"> OS-Chat </div>
+        <div class="card-body">
+
+            <div  class="container-fluid" >
+                <div class="row">
+                    <!-- Left Side -->
+                    <div class="col-md-4 border-end" style="height: 50%" >
+                        <h6>Chat List</h6>
+                            <div style="height: 450px"class="overflow-scroll overflow-x-hidden">
+                                <ol class="list-group list-group-numbered list-group-flush text-lg-start" >
+                                    <li class="list-group-item active">ssblank</li>
+                                    <li class="list-group-item">weps</li>
+                                    <li class="list-group-item">ayofalase</li>
+                                    <li class="list-group-item">chuchu</li>
+                                    <li class="list-group-item">krobsdev</li>
+                                    <li class="list-group-item">nad4head</li>
+                                    <li class="list-group-item">tny</li>
+                                    <li class="list-group-item">tattyd</li>
+                                    <li class="list-group-item">dWusu</li>
+                                    <li class="list-group-item">tny</li>
+                                    <li class="list-group-item">tny</li>
+                                    <li class="list-group-item">tattyd</li>
+                                    <li class="list-group-item">dWusu</li>
+<!--                                    <li class="list-group-item">tny</li>-->
+
+                                </ol>
+                            </div>
+
+                    </div>
+                    <!-- Right Side -->
+                    <div div style="height: 450px" class="col-md-8 overflow-scroll overflow-x-hidden border-end">
+                        <h5>ssblank</h5>
+                        <div class="text-lg-start">
+                            <p><b>ssblank:</b> hi</p>
+                            <p><b>dexter:</b> hello</p>
+                            <p><b>ssblank:</b> how are you ?</p>
+                            <p><b>dexter:</b> im good bro. wbu</p>
+                            <p><b>ssblank:</b> same same</p>
+                            <p><b>dexter:</b> lets start singing</p>
+                            <p><b>ssblank:</b> okay. what song?</p>
+                            <p><b>dexter:</b> thinking something by Willow</p>
+                            <p><b>ssblank:</b> im down</p>
+                            <p><b>ssblank:</b> which one then?</p>
+                            <p><b>dexter:</b> idk man, you decide</p>
+                        </div>
+<!--                        <p>This is the content for the right side.</p>-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer fs-3 bg-dark text-white">
+            <form class="row g-2">
+                <div class="col-10">
+                    <label for="userTextMessage" class="visually-hidden">Password</label>
+                    <input type="text" class="form-control" id="userTextMessage" placeholder="Enter your text here">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-success mb-2">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
