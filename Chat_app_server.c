@@ -582,7 +582,7 @@ int main() {
 
     //Prepare the sockaddr_in structure
 	server.sin_family = AF_INET;
-	server.sin_addr.s_addr = inet_addr("192.168.102.72");
+	server.sin_addr.s_addr = inet_addr("192.168.137.1");
 	server.sin_port = htons( 8888 );
     
     // Binding the socket

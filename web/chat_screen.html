@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>OS-Chat Client</title>
+    <style>
+        .container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+
+        // async function sendMessage(){
+        //     var userText = document.getElementById("userTextMessage").value;
+        //
+        //
+        //     // pass values to python
+        //     await eel.send_login_signup_details(2, username, password)
+        // }
+        //
+        //
+        // // @eel.expose(chosenChat)
+        // // function chosenChat(index) {
+        // //     return index;
+        // // }
+
+        eel.expose(populateChatList)
+        function populateChatList(chatList) {
+            console.log("Received chat list:", chatList);
+            var listContainer = document.getElementById("chat_list_numbered");
+
+            // Clear existing list items
+            listContainer.innerHTML = "";
+
+            chatList.forEach(function(item, index) {
+                var listItem = document.createElement("li"); // create list item
+                listItem.className = "list-group-item"; // set class name for list item
+
+                var button = document.createElement("button"); //create button element
+                button.className = "btn"; //set button class name
+                button.textContent = item; //set text for button display
+
+
+                listItem.appendChild(button);
+                listItem.setAttribute("value", index);
+                listContainer.appendChild(listItem);
+            });
+        }
+
+
+        async function selectChat(){
+
+        }
+
+        async function retrieveChatHistory(){
+
+        }
+
+
+    </script>
+</head>
+<body class="bg-white">
+<div class="container">
+
+    <div class="card text-center shadow-lg" style="width: 55%; height: 80%">
+        <div class="card-header fs-3 bg-dark text-white"> OS-Chat </div>
+        <div class="card-body">
+
+            <div  class="container-fluid" >
+                <div class="row">
+                    <!-- Left Side -->
+                    <div class="col-md-4 border-end" style="height: 50%" >
+                        <h6>Chat List</h6>
+                            <div style="height: 450px"class="overflow-scroll overflow-x-hidden" id="chat_list">
+                                <ol class="list-group list-group-numbered list-group-flush text-lg-start" id="chat_list_numbered" >
+
+
+                                </ol>
+                            </div>
+
+                    </div>
+                    <!-- Right Side -->
+                    <div div style="height: 450px" class="col-md-8 overflow-scroll overflow-x-hidden border-end">
+                        <h5>ssblank</h5>
+                        <div class="text-lg-start">
+                            <p><b>ssblank:</b> hi</p>
+                            <p><b>dexter:</b> hello</p>
+                            <p><b>ssblank:</b> how are you ?</p>
+                            <p><b>dexter:</b> im good bro. wbu</p>
+                            <p><b>ssblank:</b> same same</p>
+                            <p><b>dexter:</b> lets start singing</p>
+                            <p><b>ssblank:</b> okay. what song?</p>
+                            <p><b>dexter:</b> thinking something by Willow</p>
+                            <p><b>ssblank:</b> im down</p>
+                            <p><b>ssblank:</b> which one then?</p>
+                            <p><b>dexter:</b> idk man, you decide</p>
+                        </div>
+<!--                        <p>This is the content for the right side.</p>-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer fs-3 bg-dark text-white">
+            <form class="row g-2">
+                <div class="col-10">
+                    <label for="userTextMessage" class="visually-hidden">Password</label>
+                    <input type="text" class="form-control" id="userTextMessage" placeholder="Enter your text here">
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-success mb-2">Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

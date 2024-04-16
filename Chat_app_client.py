@@ -4,6 +4,7 @@ import sys
 import json
 import threading
 
+
 # Define the states
 STATE_SEND_LOGIN_DETAILS = 1
 STATE_WAIT_FOR_RESPONSE = 2
@@ -16,7 +17,7 @@ STATE_USER_CHAT = 6
 client_state = STATE_SEND_LOGIN_DETAILS
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-IP_address = "192.168.102.72"
+IP_address = "192.168.137.1"
 port = 8888
 server.connect((IP_address, port))
 
@@ -114,6 +115,7 @@ def display_chat_selection_menu():
     # Prompt server to serve retrieve chat function - take user selection and retrieve chat
     retrieve_chat_prompt = "retrieveChatMenu"
     server.send(retrieve_chat_prompt.encode()) #Prompt server to take requested user selection and retrieve chat
+
 
     # Take client selection of user to chat with
     try:
