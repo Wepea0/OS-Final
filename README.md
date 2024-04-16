@@ -19,7 +19,7 @@ Run `make run`
 To run just the client:
 Run `python mod_chat_app_client.py` in terminal
 
-> **Warning**
+> **Warning** -- 
 > All the clients and the server need to be connected to the same WiFi network
 
 
