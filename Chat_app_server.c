@@ -125,6 +125,7 @@ char * assign_chat_participant(char *username, char *chat_participant){
 
 void * handle_client(void* client_socket){
     char client_message[1000];
+    char client_details[1000];
     char empty_array[1000];
     char client_username[1000];
     char client_password[1000];
@@ -185,10 +186,34 @@ void * handle_client(void* client_socket){
     }
 
     //Login option
-    else{  
+    else{
         puts("Server login");
-        recv(client_fd, &client_username, sizeof(client_username), 0); //Get username
-        recv(client_fd, &client_password, sizeof(client_password), 0); //Get user password
+
+        recv(client_fd, &client_details, sizeof(client_details), 0); //Get username
+
+        char *token;
+        char *client_login_username;
+        char *client_login_password;
+
+        client_login_username = strtok(client_details, "\\0");
+        client_login_password = strtok(NULL, "\\0");
+
+
+             puts("After details split 2");
+
+
+        puts(client_login_username);
+        puts("After details split 3");
+
+//        recv(client_fd, &client_password, sizeof(client_password), 0); //Get user password
+        puts(client_login_password);
+                puts("After details split 4");
+
+        strcpy(client_username, client_login_username);
+        strcpy(client_password, client_login_password);
+
+
+
 
         if(login_user(client_username, client_password, client_IP) == 1){
             send(client_fd, &login_success_reply, strlen(login_success_reply), 0);

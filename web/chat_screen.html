@@ -24,10 +24,32 @@
         // }
         //
         //
-        // // @eel.expose(chosenChat)
-        // // function chosenChat(index) {
-        // //     return index;
-        // // }
+
+         function sendMessage(){
+            var userTex = document.getElementById("userTextMessage").value;
+
+            eel.eel_switch_to_send(userTex);
+
+            var chatBox = document.getElementById("chatBox");
+            var paraItem = document.createElement("p");
+                paraItem.textContent = userTex;
+                chatBox.appendChild(paraItem);
+
+
+        }
+
+        eel.expose(chosenChat)
+        async function chosenChat(index, item) {
+            var currentChatName = document.getElementById("currentChatName");
+            currentChatName.innerText = item // change chat text name;
+
+            var chatbox = document.getElementById("chatBox");
+            chatbox.innerText= ""; //clear existiing content
+
+            // Call python code with chosen chat
+            await eel.eel_chat_select(index);
+
+        }
 
         eel.expose(populateChatList)
         function populateChatList(chatList) {
@@ -44,7 +66,7 @@
                 var button = document.createElement("button"); //create button element
                 button.className = "btn"; //set button class name
                 button.textContent = item; //set text for button display
-
+                button.onclick = function() {chosenChat(index, item); };
 
                 listItem.appendChild(button);
                 listItem.setAttribute("value", index);
@@ -53,13 +75,38 @@
         }
 
 
-        async function selectChat(){
+
+        eel.expose(populateChatHistory)
+        function populateChatHistory(chatHistory) {
+            console.log("Received chat history:", chatHistory);
+            var chatBox = document.getElementById('chatBox');
+
+            // Clear existing content
+            chatBox.innerHTML = "";
+
+            chatHistory.forEach(function (item, index) {
+                var paraItem = document.createElement("p");
+                paraItem.textContent = item;
+                chatBox.appendChild(paraItem);
+            });
+        }
+
+
+
+        eel.expose(updateChatBox)
+        async function updateChatBox(message){
+            console.log("message recieved-->" + message);
+            var chatBox = document.getElementById('chatBox');
+
+            var parItem = documentnt.createElement("p");
+            paraItem.textContent = message;
+            chatBox.appendChild(parItem)
 
         }
 
-        async function retrieveChatHistory(){
 
-        }
+
+
 
 
     </script>
@@ -86,19 +133,19 @@
                     </div>
                     <!-- Right Side -->
                     <div div style="height: 450px" class="col-md-8 overflow-scroll overflow-x-hidden border-end">
-                        <h5>ssblank</h5>
-                        <div class="text-lg-start">
-                            <p><b>ssblank:</b> hi</p>
-                            <p><b>dexter:</b> hello</p>
-                            <p><b>ssblank:</b> how are you ?</p>
-                            <p><b>dexter:</b> im good bro. wbu</p>
-                            <p><b>ssblank:</b> same same</p>
-                            <p><b>dexter:</b> lets start singing</p>
-                            <p><b>ssblank:</b> okay. what song?</p>
-                            <p><b>dexter:</b> thinking something by Willow</p>
-                            <p><b>ssblank:</b> im down</p>
-                            <p><b>ssblank:</b> which one then?</p>
-                            <p><b>dexter:</b> idk man, you decide</p>
+                        <h5 id="currentChatName"></h5>
+                        <div class="text-lg-start" id="chatBox">
+<!--                            <p><b>ssblank:</b> hi</p>-->
+<!--                            <p><b>dexter:</b> hello</p>-->
+<!--                            <p><b>ssblank:</b> how are you ?</p>-->
+<!--                            <p><b>dexter:</b> im good bro. wbu</p>-->
+<!--                            <p><b>ssblank:</b> same same</p>-->
+<!--                            <p><b>dexter:</b> lets start singing</p>-->
+<!--                            <p><b>ssblank:</b> okay. what song?</p>-->
+<!--                            <p><b>dexter:</b> thinking something by Willow</p>-->
+<!--                            <p><b>ssblank:</b> im down</p>-->
+<!--                            <p><b>ssblank:</b> which one then?</p>-->
+<!--                            <p><b>dexter:</b> idk man, you decide</p>-->
                         </div>
 <!--                        <p>This is the content for the right side.</p>-->
                     </div>
@@ -113,7 +160,7 @@
                     <input type="text" class="form-control" id="userTextMessage" placeholder="Enter your text here">
                 </div>
                 <div class="col">
-                    <button type="submit" class="btn btn-success mb-2">Send</button>
+                    <button type="button" class="btn btn-success mb-2" onclick="sendMessage()">Send</button>
                 </div>
             </form>
         </div>

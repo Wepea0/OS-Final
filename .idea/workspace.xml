@@ -13,21 +13,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8ea9554b-8e62-4fec-ae16-6ce9d5aed256" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/OS_Django_Frontend.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mod_chat_app_client.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/chat_screen.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/home_screen.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/login_screen.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/script.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/signup_screen.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Chat_app_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/Chat_app_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Chat_app_server.c" beforeDir="false" afterPath="$PROJECT_DIR$/Chat_app_server.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chats/admin_o" beforeDir="false" afterPath="$PROJECT_DIR$/chats/admin_o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mod_chat_app_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mod_chat_app_client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tco" beforeDir="false" afterPath="$PROJECT_DIR$/tco" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/user_details.txt" beforeDir="false" afterPath="$PROJECT_DIR$/user_details.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/chat_screen.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/chat_screen.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -132,6 +124,9 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.mod_chat_app_client">
+    <configuration name="chat_screen.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/OS_Django_Frontend/web/chat_screen.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="home_screen.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/OS_Django_Frontend/web/home_screen.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
@@ -171,28 +166,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Chat_app_client.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="chat_select_page" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="OS-Final" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/frontend" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/frontend/chat_select_page.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -247,20 +220,20 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="JavaScript Debug.chat_screen.html" />
       <item itemvalue="JavaScript Debug.home_screen.html" />
       <item itemvalue="Python.mod_chat_app_client" />
       <item itemvalue="Python.Chat_app_client (1)" />
       <item itemvalue="Python.Chat_app_client (2)" />
-      <item itemvalue="Python.chat_select_page" />
       <item itemvalue="Python.main2" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.chat_screen.html" />
         <item itemvalue="Python.Chat_app_client (2)" />
         <item itemvalue="JavaScript Debug.home_screen.html" />
         <item itemvalue="Python.mod_chat_app_client" />
         <item itemvalue="Python.Chat_app_client (1)" />
-        <item itemvalue="Python.main2" />
       </list>
     </recent_temporary>
   </component>
@@ -280,7 +253,7 @@
       <workItem from="1712833833694" duration="565000" />
       <workItem from="1712834431164" duration="2191000" />
       <workItem from="1713215078476" duration="2496000" />
-      <workItem from="1713222956689" duration="24294000" />
+      <workItem from="1713222956689" duration="44749000" />
     </task>
     <servers />
   </component>
@@ -288,7 +261,7 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/OS_Django_Frontend$mod_chat_app_client.coverage" NAME="mod_chat_app_client Coverage Results" MODIFIED="1713285585981" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/OS_Django_Frontend$mod_chat_app_client.coverage" NAME="mod_chat_app_client Coverage Results" MODIFIED="1713306545477" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/OS_Django_Frontend$Chat_app_client__2_.coverage" NAME="Chat_app_client (2) Coverage Results" MODIFIED="1713276010730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -25,6 +25,12 @@ server_reply_set = threading.Event()
 chat_select_event = threading.Event()
 chosen_chat = None
 
+send_mode = None
+told_server_send = threading.Event()
+
+user_message = None
+
+# thread_event = None
 
 # Define the states
 STATE_SEND_LOGIN_DETAILS = 1
@@ -117,14 +123,15 @@ def send_login_signup_details(u_option, u_name, u_password):
 
         username = u_name
         print("attempting to send username")
-        server.send(username.encode())
+        # server.send(username.encode())
         print("username sent")
         current_username = username
 
         # print("Enter your password >> ")
         user_password = u_password
+        user_details = u_name + "\\0" + u_password + "\0"
         print("attempting to send password")
-        server.sendall(user_password.encode() + b'\0')  # Add a null byte as a delimiter
+        server.sendall(user_details.encode())  # Add a null byte as a delimiter
         print("password sent")
 
     server_reply = server.recv(2048).decode()
@@ -135,10 +142,22 @@ def send_login_signup_details(u_option, u_name, u_password):
 
     return server_reply
 
+@eel.expose
 def eel_chat_select(index):
     global chosen_chat
     chosen_chat = index
     chat_select_event.set()
+
+@eel.expose
+def eel_switch_to_send(message):
+    global send_mode
+    global user_message
+
+    print(message)
+    send_mode = "send"
+    user_message = message
+
+    told_server_send.set()
 
 def display_chat_selection_menu():
     print("Selecting chat")
@@ -161,8 +180,7 @@ def display_chat_selection_menu():
 
     # Process incoming list of users
     username_list = concat_string.split("ld00")
-    username_list = username_list[:-1] \
- \
+    username_list = username_list[:-1]
     # New list without username of the current logged in client
     new_username_list = []
     current_name_position = 0
@@ -188,9 +206,10 @@ def display_chat_selection_menu():
     # Take client selection of user to chat with
     try:
         print("Enter the number of the user you would like to chat with >>")
-        chat_select_event.wait() # wait for UI response to choose a chat
+        chat_select_event.wait() # wait for UI to choose a chat
 
         global chosen_chat
+        print("the chosen chat was", chosen_chat)
         user_selection = int(chosen_chat)
 
 
@@ -204,31 +223,42 @@ def display_chat_selection_menu():
     selected_username = new_username_list[user_selection].strip()
     print("Selected user - ", selected_username)
     value = server.send(selected_username.encode())
-    print(value)
+    print("the value is -> ",value)
 
 
 def send_message(server):
-    original_user_message = input("Enter your message >> ")
+    global user_message
+    global send_message
+
+    print("Enter your message")
+    original_user_message = user_message
     if (original_user_message.strip() == "cLoSe123"):
         print("Connection closing")
 
         # ISSUE - At this point, redirect to login/signup menu instead of exit
         global end_program
         end_program = True
-        message_sent_event.set()
+        # message_sent_event.set()
+
         return -1
         # sys.exit(0)
 
     else:
         user_message = "\n" + current_username + ": " + original_user_message
         server.sendall(user_message.encode() + b'\0')
+        print("*message sent*")
+        send_mode = None
     return 1
+
+
+# def eel_notify_send():
 
 
 def receive_replies(thread_event, message_sent_event, server):
     '''Function for setting client to receive mode until user attempts to send message'''
     start_chat_signal = "chat_in_progress"
     value = server.send(start_chat_signal.encode())
+
     # print(value)
     print("Type `send` to send a message")
 
@@ -268,6 +298,7 @@ def server_comm():
     global user_option
     global choice_event
     global server_reply
+    # global thread_event
 
 
     while True:
@@ -278,19 +309,21 @@ def server_comm():
             # if mask & selectors.EVENT_WRITE:
             if client_state == STATE_SEND_LOGIN_DETAILS:
                 # user_option = serve_authentication_options()
-                choice_event.wait() # wait for choice info from screen
+                choice_event.wait() # wait for user to select login/signup
                 login_event.wait() # wait for log in info
+
                 # server_response = send_login_signup_details(user_option)
-                choice_event.clear()
-                login_event.clear()
+
+                choice_event.clear() #clear stored chice
+                login_event.clear() #clear stored login
                 server_reply_set.wait()
                 server_response = server_reply
                 print("log in details sent")
 
                 if (server_response.strip() == "1"):
                     print("Success")
-                    eel.switch_to_chat()
-                    time.sleep(1.5)
+                    eel.switch_to_chat() #switch the UI to the chat screen
+                    time.sleep(1.5) #allow the dom to finish loading
 
                     client_state = STATE_SELECT_CHAT
                 else:
@@ -350,6 +383,11 @@ def server_comm():
                         if s.strip() != "":
                             print(">>", s)
 
+
+                    eel.populateChatHistory(chat_content_list) # send chat list history to ui
+                    time.sleep(1.2) # wait for dom to load
+
+
                 # Pass control over to chat functionality
                 client_state = STATE_USER_CHAT
 
@@ -379,12 +417,17 @@ def server_comm():
                 while True:
                     if end_program:
                         break
-                    while input().lower() != "send":
-                        print("Still receiving")
+                    # while input().lower() != "send":
+                    #     print("Still receiving")
+                    #     thread_event.clear()
+
+                    while send_mode != "send":
+                        # print("Still receiving")
                         thread_event.clear()
 
                     # print("User break detected")
                     thread_event.set()
+
 
                     message_sent_event.wait()
                     message_sent_event.clear()
