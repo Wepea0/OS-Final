@@ -62,13 +62,14 @@ def send_login_signup_details(user_option):
     else:
         print("\nEntering login menu...")
         username = input("Enter your username >> ")
-        server.send(username.encode())
+        # server.send(username.encode())
         current_username = username
 
         user_password = input("Enter your password >> ")
-        server.sendall(user_password.encode()  + b'\0')  # Add a null byte as a delimiter
+        user_details = username + "\\0" + user_password + "\0"
+        print("attempting to send password")
+        server.sendall(user_details.encode())
 
-        
     server_reply = server.recv(2048).decode()
 
     print("server reply - ", server_reply)

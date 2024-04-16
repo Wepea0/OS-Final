@@ -198,7 +198,6 @@ def display_chat_selection_menu():
     # put the chat list on the GUI
     eel.populateChatList(new_username_list)
     print("chat list populated")
-
     # Prompt server to serve retrieve chat function - take user selection and retrieve chat
     retrieve_chat_prompt = "retrieveChatMenu"
     server.send(retrieve_chat_prompt.encode())  # Prompt server to take requested user selection and retrieve chat
@@ -228,7 +227,7 @@ def display_chat_selection_menu():
 
 def send_message(server):
     global user_message
-    global send_message
+    global send_mode
 
     print("Enter your message")
     original_user_message = user_message
