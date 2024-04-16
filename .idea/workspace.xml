@@ -14,10 +14,10 @@
   <component name="ChangeListManager">
     <list default="true" id="8ea9554b-8e62-4fec-ae16-6ce9d5aed256" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chats/admin_o" beforeDir="false" afterPath="$PROJECT_DIR$/chats/admin_o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chat_app_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/Chat_app_client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chat_app_server.c" beforeDir="false" afterPath="$PROJECT_DIR$/Chat_app_server.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mod_chat_app_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mod_chat_app_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/chat_screen.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/chat_screen.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/signup_screen.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/signup_screen.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tco" beforeDir="false" afterPath="$PROJECT_DIR$/tco" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -251,7 +251,7 @@
       <workItem from="1712833833694" duration="565000" />
       <workItem from="1712834431164" duration="2191000" />
       <workItem from="1713215078476" duration="2496000" />
-      <workItem from="1713222956689" duration="47031000" />
+      <workItem from="1713222956689" duration="48835000" />
     </task>
     <servers />
   </component>
@@ -270,7 +270,7 @@
     </option>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/OS_Django_Frontend$mod_chat_app_client.coverage" NAME="mod_chat_app_client Coverage Results" MODIFIED="1713308925045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/OS_Django_Frontend$mod_chat_app_client.coverage" NAME="mod_chat_app_client Coverage Results" MODIFIED="1713310709724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/OS_Django_Frontend$Chat_app_client__2_.coverage" NAME="Chat_app_client (2) Coverage Results" MODIFIED="1713276010730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
