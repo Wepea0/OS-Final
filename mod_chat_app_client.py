@@ -268,7 +268,10 @@ def receive_replies(thread_event, message_sent_event, server):
             try:
                 server_reply = server.recv(2048).decode()
                 if (server_reply):
-                    print(server_reply)
+                    print(server_reply,"<><><><><")
+                    eel.updateChatBox(server_reply)
+                    time.sleep(0.5)
+
                 else:
                     print("Server error")
                     message_sent_event.set()

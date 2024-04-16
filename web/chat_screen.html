@@ -94,18 +94,16 @@
 
 
         eel.expose(updateChatBox)
-        async function updateChatBox(message){
+        function updateChatBox(message){
             console.log("message recieved-->" + message);
             var chatBox = document.getElementById('chatBox');
 
-            var parItem = documentnt.createElement("p");
+            var paraItem = document.createElement("p");
             paraItem.textContent = message;
-            chatBox.appendChild(parItem)
+            chatBox.appendChild(paraItem);
+            chatBox.scrollTop = chatBox.scrollHeight;
 
         }
-
-
-
 
 
 
